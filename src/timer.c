@@ -6,7 +6,7 @@
 #include "common.h"
 #include "timer.h"
 
-static uint un;
+//static uint un;
 
 void TimerInit( void )
 {
