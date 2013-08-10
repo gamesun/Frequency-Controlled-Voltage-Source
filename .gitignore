@@ -15,3 +15,11 @@
 *.exe
 *.out
 *.app
+
+# AVR Studio Work Space
+*.aws
+
+# output files generated during compilation
+default/
+
+
