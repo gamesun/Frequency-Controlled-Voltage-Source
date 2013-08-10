@@ -3,6 +3,7 @@
  Coder : gamesun
 *******************************************************************/
 
+#include "common.h"
 #include "main.h"
 #include "uart.h"
 
@@ -55,7 +56,7 @@ static void InitDevices( void )
    13 ©ÏXTAL1         PC6(TOSC1)©Ç 28
    14 ©Ï(RXD)PD0        PC5(TDI)©Ç 27
    15 ©Ï(TXD)PD1        PC4(TDO)©Ç 26
-   16 ©Ï(INT0)PD2      PC3(TMS) ©Ç 25
+   16 ©Ï(INT0)PD2       PC3(TMS)©Ç 25
    17 ©Ï(INT1)PD3       PC2(TCK)©Ç 24
    18 ©Ï(OC1B)PD4       PC1(SDA)©Ç 23
    19 ©Ï(OC1A)PD5       PC0(SCL)©Ç 22
