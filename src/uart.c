@@ -3,6 +3,7 @@
  Coder : sunyt
 *******************************************************************/
 
+#include "common.h"
 #include "uart.h"
 
 
@@ -91,12 +92,22 @@ void Uart0Init( void )
     memset( st_ucRxBuff,  0, RECV_BUF_SIZE  );
 
     UCSRB = 0x00;                   // close uart
-    UCSRA = 0x02;                   // freq x 2
-//  UCSRA = 0x00;                   //
     UCSRC = _BV(URSEL) | 0x06;      // 8 databits
 
-    UBRRH = 0x00;
-    UBRRL = 207;                    // BaudRate:9615 @ 16Mhz Crystal Freq
+//    UCSRA = 0x02;                   // freq x 2
+//    UBRRH = 0x00;
+//    UBRRL = 207;                    // BaudRate:9615 @ 16Mhz Crystal Freq
+
+#undef BAUD  // avoid compiler warning
+#define BAUD 9600
+#include <util/setbaud.h>
+    UBRRH = UBRRH_VALUE;
+    UBRRL = UBRRL_VALUE;
+#if USE_2X
+    UCSRA |= (1 << U2X);
+#else
+    UCSRA &= ~(1 << U2X);
+#endif
 
                                     // open uart
     UCSRB = _BV(RXCIE)|             // enable receive complete interrupt
