@@ -9,5 +9,6 @@
 #define __DAC_H__
 
 
+extern void SetVoltage( uint unVol100times );
 
 #endif /* __DAC_H__ */
