@@ -1,13 +1,6 @@
 /*******************************************************************
- File  : main.h
+ File  : timer.c
  Coder : gamesun
 *******************************************************************/
 
-#pragma once
-
-#ifndef __MAIN_H__
-#define __MAIN_H__
-
-#include "common.h"
-
-#endif /* __MAIN_H__ */
+#include "timer.h"

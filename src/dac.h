@@ -1,13 +1,13 @@
 /*******************************************************************
- File  : main.h
+ File  : dac.h
  Coder : gamesun
 *******************************************************************/
 
 #pragma once
 
-#ifndef __MAIN_H__
-#define __MAIN_H__
+#ifndef __DAC_H__
+#define __DAC_H__
 
-#include "common.h"
 
-#endif /* __MAIN_H__ */
+
+#endif /* __DAC_H__ */
