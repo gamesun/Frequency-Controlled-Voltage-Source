@@ -8,7 +8,6 @@
 #ifndef __UART_H__
 #define __UART_H__
 
-#include "common.h"
 
 
 //#define DBG(CODE)
