@@ -6,7 +6,22 @@
 #include "common.h"
 #include "timer.h"
 
-//static uint un;
+#define T_OVF_MAX   1
+
+typedef enum {
+    FMS_READY = 0,
+    FMS_RUNNING,
+    FMS_COMPLETE,
+} FREQ_METER_STATE;
+
+static uchar ucTimerOvfCnt;
+static FREQ_METER_STATE enFreqMeterState = READY;
+
+static uint unFreqMeterCntStart = 0;
+static uint unFreqMeterCntEnd   = 0;
+static ulong ulFreqMeterCntRlt  = 0;
+
+static ulong ulFrequency = 0;
 
 static void TC1Init( void );
 
@@ -14,6 +29,35 @@ void TimerInit( void )
 {
     TC1Init();
 }
+
+
+void FreqMeterHandle( void )
+{
+//    ulong ulQuotient;
+//    ulong ulRemainder;
+    
+    switch ( enFreqMeterState ){
+    case FMS_READY:
+        
+        break;
+    case FMS_RUNNING:
+        
+        break;
+    case FMS_COMPLETE:
+        enFreqMeterState = FMS_READY;
+/*
+        ulQuotient  = F_CPU / ulFreqMeterCntRlt;
+        ulRemainder = F_CPU % ulFreqMeterCntRlt;
+        ulFrequency = ulQuotient + ulRemainder / ulFreqMeterCntRlt;
+*/
+        ulFrequency = F_CPU / ulFreqMeterCntRlt;
+        break;
+    default:
+        break;
+    }
+    
+}
+
 
 // calc the freq
 ulong GetFreq( void )
@@ -59,12 +103,45 @@ static void TC1Init( void )
 /*------------------------------------------- Timer/Counter1 Capture Event --*/
 ISR( TIMER1_CAPT_vect )
 {
-    // TODO: read ICR1L, then read ICR1H
+    uchar sreg;
+    uint unICRBuff;
     
+    sreg = SREG;        // Save global interrupt flag
+    cli()               // Disable interrupts
+    
+    unICRBuff = ICR1;   // read ICR1
+    
+    SREG = sreg;        // Restore global interrupt flag
+    
+    switch ( enFreqMeterState ){
+    case FMS_READY:
+        unFreqMeterCntStart = unICRBuff;
+        ucTimerOvfCnt       = 0;
+        enFreqMeterState    = FMS_RUNNING;
+        break;
+    case FMS_RUNNING:
+        unFreqMeterCntEnd   = unICRBuff;
+        
+        // if CntStart <= CntEnd : Rlt = CntEnd - CntStart + 0xffff * OvfCnt
+        // if CntEnd < CntStart  : Rlt = 0xffff - CntStart + CntEnd + 0xffff * ( OvfCnt - 1 )
+        // -->> Rlt = ( CntEnd + 0xffff * OvfCnt ) - CntStart
+        ulFreqMeterCntRlt   = ( (ulong)unFreqMeterCntEnd + 0xfffful * (ulong)ucTimerOvfCnt )
+                              - (ulong)unFreqMeterCntStart;
+        enFreqMeterState    = FMS_COMPLETE;
+        break;
+    case FMS_COMPLETE:
+        break;
+    default:
+        break;
+    }
 }
 /*------------------------------------------ Timer/Counter1 Overflow Event --*/
 ISR( TIMER1_OVF_vect )
 {
-    // TODO: set flag
-    
+    if ( ucTimerOvfCnt < T_OVF_MAX ){
+        ucTimerOvfCnt++;
+    } else {
+        // overflow too many times, means the signal has been taken off.
+        // running = FALSE;
+    }
 }
