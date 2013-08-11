@@ -85,7 +85,7 @@ ISR( USART_RXC_vect )
     myputc( ucRxBuff );
 }
 
-void Uart0Init( void )
+void UartInit( void )
 {
     st_bRxCmdEnd = FALSE;
     st_ucRxBuffIdx = 0;
