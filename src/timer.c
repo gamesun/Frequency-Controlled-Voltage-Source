@@ -15,7 +15,7 @@ typedef enum {
 } FREQ_METER_STATE;
 
 static uchar ucTimerOvfCnt;
-static FREQ_METER_STATE enFreqMeterState = READY;
+static FREQ_METER_STATE enFreqMeterState = FMS_READY;
 
 static uint unFreqMeterCntStart = 0;
 static uint unFreqMeterCntEnd   = 0;
@@ -107,7 +107,7 @@ ISR( TIMER1_CAPT_vect )
     uint unICRBuff;
     
     sreg = SREG;        // Save global interrupt flag
-    cli()               // Disable interrupts
+    cli();              // Disable interrupts
     
     unICRBuff = ICR1;   // read ICR1
     
