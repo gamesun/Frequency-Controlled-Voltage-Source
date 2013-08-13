@@ -5,6 +5,7 @@
 
 #include "common.h"
 #include "counter.h"
+#include "uart.h"
 
 #define CNT_NUM        10
 
@@ -23,7 +24,7 @@ static void SetTc0Top( uint unCntTop );
 
 void CounterInit( void )
 {
-    TC0Init();
+    Tc0Init();
 }
 
 
@@ -59,7 +60,7 @@ void CounterStart( void )
     }
     
     if ( TRUE == bIsCntValid ){
-        SetTc0Top();
+        SetTc0Top( unCnt[ucCntState] );
         Tc0Start();
     } else {
         putstr( "Make sure that each Ci in {C1...Cn} is not zero value." );
@@ -97,8 +98,8 @@ static void SetTc0Top( uint unCntTop )
 }
 
 
-/* T/C0 Compare Match Event --*/
-ISR()
+/*----------------------------------------------- T/C0 Compare Match Event --*/
+ISR( TIMER0_COMP_vect )
 {
     if ( 1 < ucOvfCntRemain ){
         ucOvfCntRemain--;
@@ -106,7 +107,7 @@ ISR()
         ucOvfCntRemain--;
         OCR0 = ucLastCnt;
     } else {
-        // this stage is complete.
+        // this state is complete.
         if ( ucCntState < ucCntStateMax ){
             SetTc0Top( unCnt[++ucCntState] );
         } else {
