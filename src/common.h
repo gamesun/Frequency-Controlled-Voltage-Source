@@ -13,6 +13,7 @@
 #include <util/delay.h>
 //#include <math.h>
 #include <string.h>
+#include <avr/pgmspace.h>
 
 typedef enum {
     FALSE = 0,
