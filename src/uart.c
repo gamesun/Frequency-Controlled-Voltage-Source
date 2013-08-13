@@ -6,34 +6,47 @@
 #include "common.h"
 #include "uart.h"
 
+#define RECV_BUF_SIZE       32
 
-static void myputc( char );
-static void putx( ulong, ulong );
+
+const char szRxCmdCR  PROGMEM = 13;     // Carriage Return
+const char szRxCmdBS  PROGMEM = 8;      // BackSpace
+
 
 static uchar st_ucRxBuff[RECV_BUF_SIZE];
 static uchar st_ucRxBuffIdx;
 static bool  st_bRxCmdEnd;
 
+
+static void myputc( char );
+static void putx( ulong, ulong );
+static void myputf( float );
+
+
 void CmdHandle( void )
 {
     uchar   ucCmdBuff[RECV_BUF_SIZE];
-//    uchar   ucLen;
+    uchar   ucLen;
 //    uchar   ucCnt;
+    uchar   i;
     D2C     UTmp;
     schar   a;
     double  b;
 
     if ( st_bRxCmdEnd ){
-//      ucLen = st_ucRxBuff[1] - 3;//head,len,end are not needed
-//      for ( ucCnt = 0; ucCnt < ucLen; ucCnt++ )
-//      {
-//          ucCmdBuff[ucCnt] = st_ucRxBuff[ucCnt + 2];
-//      }
-//      st_bRxCmdEnd = FALSE;
+        st_bRxCmdEnd = FALSE;
+
+        UCSRB &= ~_BV( RXCIE );       // RX INT Off
+        ucLen = st_ucRxBuffIdx;
+        for ( i = 0; i < ucLen; i++ ){
+            ucCmdBuff[i] = st_ucRxBuff[i];
+        }
+        st_ucRxBuffIdx = 0;
+        UCSRB |= _BV( RXCIE );        // RX INT On
+        ucCmdBuff[i] = 0;
 
 
-
-        putstr( (char*)ucCmdBuff );
+        __putstr( (char*)ucCmdBuff );
 
         switch( ucCmdBuff[0] ){
         case RX_CMD_A:
@@ -123,7 +136,7 @@ static void myputc( char c )
     UDR = c;
 }
 
-void putstr( char *pStr )
+void __putstr( const char *pStr )
 {
     while(*pStr != '\0'){
         myputc(*pStr++);
@@ -199,29 +212,77 @@ void putsl( slong slSrc )
 
 }
 
-void putf( double fSrc ){
-    D2C     UTmp;
 
-    UTmp.d = fSrc;
-
-//  NAN 7FC00000L: Not A Number
-//  send cmd
-    loop_until_bit_is_set(UCSRA, UDRE);
-    UDR = 0x7F;
-    loop_until_bit_is_set(UCSRA, UDRE);
-    UDR = 0xC0;
-    loop_until_bit_is_set(UCSRA, UDRE);
-    UDR = 0x00;
-    loop_until_bit_is_set(UCSRA, UDRE);
-    UDR = 0x00;
-
-    loop_until_bit_is_set(UCSRA, UDRE);     // 1st char
-    UDR = UTmp.c[0];
-    loop_until_bit_is_set(UCSRA, UDRE);     // 2rd char
-    UDR = UTmp.c[1];
-    loop_until_bit_is_set(UCSRA, UDRE);     // 3th char
-    UDR = UTmp.c[2];
-    loop_until_bit_is_set(UCSRA, UDRE);     // 4th char
-    UDR = UTmp.c[3];
+void putf( float fSrc )
+{
+    if ( fSrc < 0 ){
+        putstr( "-" );
+        myputf( -fSrc );
+    } else {
+        myputf( fSrc );
+    }
 }
 
+// the input float number should be low than 9.99999E9
+static void myputf( float f )
+{
+    float fSrc;
+    long nIntDiv;
+    char szDecCnt;
+    char szIntCnt;
+    char szCntTmp;
+    char szBuff[10] = {0};
+    uchar ucBuffIdx;
+    char szLastNotZero;
+    
+    fSrc          = f;
+    ucBuffIdx     = 0;
+    szDecCnt      = 0;
+    szIntCnt      = 0;
+    szLastNotZero = 0;
+    
+    for ( nIntDiv = 1000000000L; nIntDiv; nIntDiv /= 10 ){
+        if ( (long)fSrc / nIntDiv ){
+            break;
+        }
+    }
+    
+    do{
+        myputc( (long)fSrc / nIntDiv % 10 + 0x30 );
+        nIntDiv /= 10;
+        szIntCnt++;
+    } while ( nIntDiv );
+    
+    szCntTmp = 7 - szIntCnt;
+    
+    
+    
+    if ( szIntCnt ){
+        
+    } else {
+        myputc( '0' );
+        
+        do {
+            fSrc *= 10;
+            myputc( (long)fSrc % 10 + '0' );
+        } while ( 0 != (long)fSrc % 10 );
+    }
+    
+    do {
+        fSrc *= 10;
+        szBuff[ucBuffIdx] = (long)fSrc % 10 + 0x30;
+        szDecCnt++;
+        if ( '0' != szBuff[ucBuffIdx] ){
+            szLastNotZero = szDecCnt;
+        }
+        ucBuffIdx++;
+    } while ( szDecCnt < szCntTmp );
+    
+    if ( szLastNotZero ){
+        myputc( '.' );
+    }
+    
+    for ( ucBuffIdx = 0; ucBuffIdx < szLastNotZero; ucBuffIdx++ ){
+        myputc( szBuff[ucBuffIdx] );
+    }
+}
