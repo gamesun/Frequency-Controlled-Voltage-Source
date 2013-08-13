@@ -19,7 +19,6 @@
 #define RX_CMD_B            0x42    // 'B'
 #define RX_CMD_C            0x43    // 'C'
 
-#define RECV_BUF_SIZE       32
 
 #define MY_NAN 7FC00000L        // Not A Number
 
@@ -29,7 +28,8 @@ extern void CmdHandle( void );
 
 extern void UartInit( void );
 
-extern void putstr( char* );
+#define putstr(str) __putstr( PSTR( str ))
+extern void __putstr( const char* );
 
 extern void putuc( uchar );
 extern void putsc( schar );
@@ -37,7 +37,7 @@ extern void putn( uint );
 extern void putsn( sint );
 extern void putl( ulong );
 extern void putsl( slong );
-extern void putf( double );
+extern void putf( float );
 
 extern uint g_dbgLCD;
 
