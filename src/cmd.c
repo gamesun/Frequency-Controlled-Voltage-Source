@@ -13,6 +13,9 @@
 #define ARG_NUM         8
 #define ARG_LEN         8
 
+
+#define CMD_BUFF_LEN    RECV_BUF_SIZE
+
 typedef struct cmd {
     char szCmd[CMD_LEN];
     uint unArgs[ARG_NUM];
@@ -24,9 +27,11 @@ typedef struct cmd_Matrix {
     void (*pf_HandleFunc)( PST_CMD );
 } ST_CMD_MATRIX;
 
-void CmdStart( PST_CMD );
-void CmdSetCnt( PST_CMD );
-void CmdSetTime( PST_CMD );
+static void CmdExecute( PST_CMD );
+static uchar CmdCnvArgs( char * pcStr, PST_CMD pstCmd );
+static void CmdStart( PST_CMD );
+static void CmdSetCnt( PST_CMD );
+static void CmdSetTime( PST_CMD );
 
 static ST_CMD_MATRIX stCmdMatrix[] = {
     
@@ -34,22 +39,42 @@ static ST_CMD_MATRIX stCmdMatrix[] = {
     { "setcnt",     CmdSetCnt       },
     { "settime",    CmdSetTime      },
     
-    { "1",         NULL            }  // Placing NULL at the end.
+    { "",           NULL            }  // Placing NULL at the end.
 };
 
 
-void CmdHandle( )
+
+void CmdHandle( void )
+{
+    uchar i;
+    char szBuff[CMD_BUFF_LEN];
+    ST_CMD stCmd;
+    
+    if ( bIsCmdExist ){
+        for ( i = 0; ucCmdBuff[i] != 0; i++ ){
+            szBuff[i] = ucCmdBuff[i];
+        }
+        bIsCmdExist = FALSE;
+
+        CmdCnvArgs( szBuff, &stCmd );
+
+        CmdExecute( &stCmd );
+    }
+}
+
+
+static void CmdExecute( PST_CMD pstCmd )
 {
     uchar i;
     
-    for ( i = 0; stCmdMatrix[i].szCmd != NULL; i++ ){
+    for ( i = 0; stCmdMatrix[i].pf_HandleFunc != NULL; i++ ){
         if ( 0 ){
-            stCmdMatrix[i].pf_HandleFunc( NULL );
+            stCmdMatrix[i].pf_HandleFunc( pstCmd );
             break;
         }
     }
     
-    if ( stCmdMatrix[i].szCmd == NULL ){
+    if ( stCmdMatrix[i].pf_HandleFunc == NULL ){
         pgmputs( "invalid command.\n" );
     }
 }
@@ -57,7 +82,7 @@ void CmdHandle( )
 const char szSpace  PROGMEM = 32;
 const char szTab  PROGMEM = 9;
 
-uchar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
+static uchar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
 {
     uchar ucArgsIdx;
     bool bIsBlank;
@@ -105,19 +130,19 @@ uchar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
 }
 
 
-void CmdStart( PST_CMD pstCmd )
+static void CmdStart( PST_CMD pstCmd )
 {
     
 }
 
 
-void CmdSetCnt( PST_CMD pstCmd )
+static void CmdSetCnt( PST_CMD pstCmd )
 {
     
 }
 
 
-void CmdSetTime( PST_CMD pstCmd )
+static void CmdSetTime( PST_CMD pstCmd )
 {
     
 }
