@@ -17,7 +17,7 @@ static uchar st_ucRxBuff[RECV_BUF_SIZE];
 static uchar st_ucRxBuffIdx;
 static bool  st_bRxCmdEnd;
 
-
+inline bool myIsDigit( const char* str, int nLen );
 static void myputc( char );
 static void putx( ulong, ulong );
 static void myputf( float );
@@ -29,9 +29,8 @@ void CmdHandle( void )
     uchar   ucLen;
 //    uchar   ucCnt;
     uchar   i;
-    D2C     UTmp;
-    schar   a;
-    double  b;
+
+
 
     if ( st_bRxCmdEnd ){
         st_bRxCmdEnd = FALSE;
@@ -46,27 +45,42 @@ void CmdHandle( void )
         ucCmdBuff[i] = 0;
 
 
-        __putstr( (char*)ucCmdBuff );
+        putstr( (char*)ucCmdBuff );
 
-        switch( ucCmdBuff[0] ){
-        case RX_CMD_A:
-            a = *(schar*)&ucCmdBuff[1];
-            putstr( "\na:" );
-            putsc( a );
-            break;
-        case RX_CMD_B:
-            UTmp.c[0] = ucCmdBuff[1];
-            UTmp.c[1] = ucCmdBuff[2];
-            UTmp.c[2] = ucCmdBuff[3];
-            UTmp.c[3] = ucCmdBuff[4];
-            b = UTmp.d;
-            putstr( "\nb:" );
-            putf( b );
-            break;
-        case RX_CMD_C:
-            break;
-        default:
-            break;
+        if ( 's' == ucCmdBuff[0] &&            // sin
+             'i' == ucCmdBuff[1] &&
+             'n' == ucCmdBuff[2] ){
+            if ( myIsDigit( (char*)&ucCmdBuff[3], ucLen - 3 ) ){
+
+            } else {
+                DBG(putstr( (char*)&ucCmdBuff[3] ););
+                pgmputs( ": Invalid Number.\n" );
+            }            
+        } else if ( 't' == ucCmdBuff[0] &&    // tri
+                    'r' == ucCmdBuff[1] &&
+                    'i' == ucCmdBuff[2] ){
+            pgmputs( "Exporting Triangle wave!" );
+        } else if ( 'r' == ucCmdBuff[0] &&    // rec
+                    'e' == ucCmdBuff[1] &&
+                    'c' == ucCmdBuff[2] ){
+            pgmputs( "Exporting Rectangular wave!" );
+        } else if ( 's' == ucCmdBuff[0] &&    // saw
+                    'a' == ucCmdBuff[1] &&
+                    'w' == ucCmdBuff[2] ){
+            pgmputs( "Exporting Sawtooth wave!" );
+        } else if ( 'h' == ucCmdBuff[0] &&    // help
+                    'e' == ucCmdBuff[1] &&
+                    'l' == ucCmdBuff[2] &&
+                    'p' == ucCmdBuff[3] ){
+            pgmputs( " sin[F]  Sine wave\n" );
+            pgmputs( " rec[F]  Rectangular wave\n" );
+            pgmputs( " tri[F]  Triangle wave\n" );
+            pgmputs( " saw[F]  Sawtooth wave\n" );
+            pgmputs( " F: the Frequency(Hz)£¬Range 1 - 10000\n" );
+            pgmputs( " e.g. \'sin1\' OR \'sin12345\'\n" );
+        } else if ( 0 < ucLen ){
+//            DBG(putstr( ucCmdBuff ););
+            pgmputs( ": command not found.\n" );
         }
     }
 }
@@ -74,28 +88,23 @@ void CmdHandle( void )
 ISR( USART_RXC_vect )
 {
     uchar ucRxBuff;
-/*
-    if ( st_bRxCmdEnd  )
-    {
-        ASSERT(0);
-
-    }
-*/
+    
     ucRxBuff = UDR;
-
-
-
-//  if ( RX_BYTE_HEAD == ucRxBuff )
-//  {
-//      st_ucRxBuffIdx = 0;
-//  }
-//  else if ( RX_BYTE_END == ucRxBuff )
-//  {
-//      st_bRxCmdEnd = TRUE;
-//  }
-//  st_ucRxBuff[st_ucRxBuffIdx++] = ucRxBuff ;
-
     myputc( ucRxBuff );
+    
+    if ( szRxCmdCR == ucRxBuff ){           // CR
+        st_bRxCmdEnd = TRUE;
+        return;
+    }else if ( szRxCmdBS == ucRxBuff ){     // BackSpace
+        if ( 0 < st_ucRxBuffIdx ){
+            st_ucRxBuffIdx--;
+            pgmputs( "\x20\b" );
+        }
+        return;
+    }
+    
+    st_ucRxBuff[st_ucRxBuffIdx++] = ucRxBuff ;
+
 }
 
 void UartInit( void )
@@ -136,7 +145,7 @@ static void myputc( char c )
     UDR = c;
 }
 
-void __putstr( const char *pStr )
+void putstr( char *pStr )
 {
     while(*pStr != '\0'){
         myputc(*pStr++);
@@ -168,11 +177,11 @@ void putuc( uchar ucSrc )
 void putsc( schar scSrc )
 {
     if ( 0 == scSrc ){
-        putstr( "0" );
+        pgmputs( "0" );
     } else if ( 0 < scSrc ){
         putuc( (uchar)scSrc );
     } else {
-        putstr( "-" );
+        pgmputs( "-" );
         putuc( (uchar)(-scSrc) );
     }
 }
@@ -185,11 +194,11 @@ void putn( uint unSrc )
 void putsn( sint snSrc )
 {
     if ( 0 == snSrc ){
-        putstr( "0" );
+        pgmputs( "0" );
     } else if ( 0 < snSrc ){
         putn( (uint)snSrc );
     } else {
-        putstr( "-" );
+        pgmputs( "-" );
         putn( (uint)(-snSrc) );
     }
 }
@@ -202,11 +211,11 @@ void putl( ulong ulSrc )
 void putsl( slong slSrc )
 {
     if ( 0 == slSrc ){
-        putstr( "0" );
+        pgmputs( "0" );
     } else if ( 0 < slSrc ){
         putl( (ulong)slSrc );
     } else {
-        putstr( "-" );
+        pgmputs( "-" );
         putl( (ulong)(-slSrc) );
     }
 
@@ -216,7 +225,7 @@ void putsl( slong slSrc )
 void putf( float fSrc )
 {
     if ( fSrc < 0 ){
-        putstr( "-" );
+        pgmputs( "-" );
         myputf( -fSrc );
     } else {
         myputf( fSrc );
@@ -285,4 +294,14 @@ static void myputf( float f )
     for ( ucBuffIdx = 0; ucBuffIdx < szLastNotZero; ucBuffIdx++ ){
         myputc( szBuff[ucBuffIdx] );
     }
+}
+
+inline bool myIsDigit( const char* str, int nLen )
+{
+	while ( nLen-- ){
+		if (!isdigit(*str++)){
+			return FALSE;
+		}
+	}
+	return TRUE;
 }

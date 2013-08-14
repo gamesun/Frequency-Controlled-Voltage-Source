@@ -28,8 +28,11 @@ extern void CmdHandle( void );
 
 extern void UartInit( void );
 
-#define putstr(str) __putstr( PSTR( str ))
-extern void __putstr( const char* );
+/* in the file <avr/pgmspace.h>:
+ # define PSTR(s) (__extension__({static char __c[] PROGMEM = (s); &__c[0];}))
+ */
+#define pgmputs(str) putstr( PSTR( str ))
+extern void putstr( char* );
 
 extern void putuc( uchar );
 extern void putsc( schar );

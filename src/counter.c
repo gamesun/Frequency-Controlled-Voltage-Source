@@ -63,7 +63,7 @@ void CounterStart( void )
         SetTc0Top( unCnt[ucCntState] );
         Tc0Start();
     } else {
-        putstr( "Make sure that each Ci in {C1...Cn} is not zero value." );
+        pgmputs( "Make sure that each Ci in {C1...Cn} is not zero value." );
     }
 }
 
