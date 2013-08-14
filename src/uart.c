@@ -6,8 +6,6 @@
 #include "common.h"
 #include "uart.h"
 
-#define RECV_BUF_SIZE       32
-
 
 const char szRxCmdCR  PROGMEM = 13;     // Carriage Return
 const char szRxCmdBS  PROGMEM = 8;      // BackSpace
@@ -17,71 +15,32 @@ static uchar st_ucRxBuff[RECV_BUF_SIZE];
 static uchar st_ucRxBuffIdx;
 static bool  st_bRxCmdEnd;
 
+uchar ucCmdBuff[RECV_BUF_SIZE];
+bool bIsCmdExist;
+
 inline bool myIsDigit( const char* str, int nLen );
 static void myputc( char );
 static void putx( ulong, ulong );
 static void myputf( float );
 
 
-void CmdHandle( void )
+void UartHandle( void )
 {
-    uchar   ucCmdBuff[RECV_BUF_SIZE];
     uchar   ucLen;
-//    uchar   ucCnt;
     uchar   i;
-
-
 
     if ( st_bRxCmdEnd ){
         st_bRxCmdEnd = FALSE;
 
         UCSRB &= ~_BV( RXCIE );       // RX INT Off
-        ucLen = st_ucRxBuffIdx;
+        ucLen = MIN( st_ucRxBuffIdx, RECV_BUF_SIZE );
         for ( i = 0; i < ucLen; i++ ){
             ucCmdBuff[i] = st_ucRxBuff[i];
         }
         st_ucRxBuffIdx = 0;
         UCSRB |= _BV( RXCIE );        // RX INT On
         ucCmdBuff[i] = 0;
-
-
-        putstr( (char*)ucCmdBuff );
-
-        if ( 's' == ucCmdBuff[0] &&            // sin
-             'i' == ucCmdBuff[1] &&
-             'n' == ucCmdBuff[2] ){
-            if ( myIsDigit( (char*)&ucCmdBuff[3], ucLen - 3 ) ){
-
-            } else {
-                DBG(putstr( (char*)&ucCmdBuff[3] ););
-                pgmputs( ": Invalid Number.\n" );
-            }            
-        } else if ( 't' == ucCmdBuff[0] &&    // tri
-                    'r' == ucCmdBuff[1] &&
-                    'i' == ucCmdBuff[2] ){
-            pgmputs( "Exporting Triangle wave!" );
-        } else if ( 'r' == ucCmdBuff[0] &&    // rec
-                    'e' == ucCmdBuff[1] &&
-                    'c' == ucCmdBuff[2] ){
-            pgmputs( "Exporting Rectangular wave!" );
-        } else if ( 's' == ucCmdBuff[0] &&    // saw
-                    'a' == ucCmdBuff[1] &&
-                    'w' == ucCmdBuff[2] ){
-            pgmputs( "Exporting Sawtooth wave!" );
-        } else if ( 'h' == ucCmdBuff[0] &&    // help
-                    'e' == ucCmdBuff[1] &&
-                    'l' == ucCmdBuff[2] &&
-                    'p' == ucCmdBuff[3] ){
-            pgmputs( " sin[F]  Sine wave\n" );
-            pgmputs( " rec[F]  Rectangular wave\n" );
-            pgmputs( " tri[F]  Triangle wave\n" );
-            pgmputs( " saw[F]  Sawtooth wave\n" );
-            pgmputs( " F: the Frequency(Hz)£¬Range 1 - 10000\n" );
-            pgmputs( " e.g. \'sin1\' OR \'sin12345\'\n" );
-        } else if ( 0 < ucLen ){
-//            DBG(putstr( ucCmdBuff ););
-            pgmputs( ": command not found.\n" );
-        }
+        bIsCmdExist = TRUE;
     }
 }
 

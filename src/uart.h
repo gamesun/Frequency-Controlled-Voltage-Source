@@ -8,7 +8,7 @@
 #ifndef __UART_H__
 #define __UART_H__
 
-
+#define RECV_BUF_SIZE       32
 
 //#define DBG(CODE)
 #define DBG(CODE) CODE
@@ -24,7 +24,7 @@
 
 extern uchar g_ucRxBuff[];
 
-extern void CmdHandle( void );
+extern void UartHandle( void );
 
 extern void UartInit( void );
 
@@ -44,5 +44,7 @@ extern void putf( float );
 
 extern uint g_dbgLCD;
 
+extern uchar ucCmdBuff[RECV_BUF_SIZE];
+extern bool bIsCmdExist;
 
 #endif /* __UART_H__ */
