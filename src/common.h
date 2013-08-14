@@ -14,6 +14,7 @@
 //#include <math.h>
 #include <string.h>
 #include <avr/pgmspace.h>
+#include <ctype.h>
 
 typedef enum {
     FALSE = 0,
