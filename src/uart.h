@@ -31,7 +31,8 @@ extern void UartInit( void );
 /* in the file <avr/pgmspace.h>:
  # define PSTR(s) (__extension__({static char __c[] PROGMEM = (s); &__c[0];}))
  */
-#define pgmputs(str) putstr( PSTR( str ))
+#define pgmputs(str) putstr_p( PSTR( str ))
+extern void putstr_p( const char* );
 extern void putstr( char* );
 
 extern void putuc( uchar );

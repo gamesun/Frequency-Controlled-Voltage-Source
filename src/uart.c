@@ -111,6 +111,12 @@ void putstr( char *pStr )
     }
 }
 
+void putstr_p( const char *pStr )
+{
+    while( pgm_read_byte(pStr) != 0 )
+        myputc(pgm_read_byte(pStr++));
+}
+
 static void putx( ulong ulSrc, ulong ulMaxDiv )
 {
     ulong ulDiv;
