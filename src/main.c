@@ -6,8 +6,9 @@
 #include "common.h"
 #include "main.h"
 #include "uart.h"
-#include "timer.h"
+#include "counter.h"
 #include "spi.h"
+#include "cmd.h"
 
 static void InitDevices( void );
 static void IOPortInit( void );
@@ -34,7 +35,7 @@ static void InitDevices( void )
 
     MCUCR = 0x00;                           // sleep mode off
     IOPortInit();
-    TimerInit();
+    CounterInit();
     SpiInit();
     UartInit();
 
