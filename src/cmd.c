@@ -180,19 +180,16 @@ static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
 
 static void CmdStart( PST_CMD pstCmd )
 {
-    pgmputs( "CmdStart\n" );
     CounterStart();
 }
 
 
 static void CmdSetCnt( PST_CMD pstCmd )
 {
-    
-    pgmputs( "CmdSetCnt\n" );
-    
     dbgPutCmd( pstCmd );
     
     if ( 2 != pstCmd->ucArgsCnt ){
+        pgmputs( "invalid arguments.\n\n" );
         pgmputs( "usage:\nsetcnt c num\n" );
         pgmputs( "  c    from 2 to 5.\n" );
         pgmputs( "  num  from 1 to 65535.\n" );
@@ -204,12 +201,18 @@ static void CmdSetCnt( PST_CMD pstCmd )
 
 static void CmdSetTime( PST_CMD pstCmd )
 {
-    pgmputs( "CmdSetTime\n" );
+    dbgPutCmd( pstCmd );
 }
 
 static void CmdSetVol( PST_CMD pstCmd )
 {
     dbgPutCmd( pstCmd );
+    
+    if ( 1 != pstCmd->ucArgsCnt ){
+        pgmputs( "invalid arguments.\n\n" );
+        pgmputs( "usage:\nsetvol v\n" );
+        pgmputs( "  v    from 0 to 500 (500 means 5.00V).\n" );
+    }
     
     SetVoltage( pstCmd->unArgs[0] );
 }
@@ -219,6 +222,12 @@ static void dbgPutCmd( PST_CMD pstCmd )
     uchar i;
 
     pgmputs( "args:" );
+    
+    if ( 0 == pstCmd->ucArgsCnt ){
+        pgmputs( "none\n" );
+        return;
+    }
+    
     for ( i = 0; i < pstCmd->ucArgsCnt - 1; i++ ){
         putun( pstCmd->unArgs[i] );
         pgmputs( "," );
