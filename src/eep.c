@@ -6,6 +6,85 @@
 #include "common.h"
 #include "eep.h"
 
+static uchar EepRd( uint unAddress );
+static void EepWt( uint unAddress, uchar ucData );
+
+void EepWtByte( uint unStartAddress, uchar ucData )
+{
+    if ( EEP_ADDR_END < unStartAddress ){
+        return;
+    }
+    
+    EepWt( unStartAddress, ucData );
+}
+
+uchar EepRdByte( uint unStartAddress )
+{
+    if ( EEP_ADDR_END < unStartAddress ){
+        return -1;
+    }
+    
+    return EepRd( unStartAddress );
+}
+
+void EepWtWord( uint unStartAddress, uint unData )
+{
+    W2B w2b;
+    
+    if ( EEP_ADDR_END < unStartAddress + 1 ){
+        return;
+    }
+    
+    w2b.word = unData;
+    EepWt( unStartAddress,     w2b.byte[0] );
+    EepWt( unStartAddress + 1, w2b.byte[1] );
+}
+
+uint EepRdWord( uint unStartAddress )
+{
+    W2B w2b;
+    
+    if ( EEP_ADDR_END < unStartAddress + 1 ){
+        return -1;
+    }
+    
+    w2b.byte[0] = EepRd( unStartAddress );
+    w2b.byte[1] = EepRd( unStartAddress  + 1 );
+    
+    return (w2b.word);
+}
+
+
+void EepWtDword( uint unStartAddress, ulong ulData )
+{
+    DW2B dw2b;
+    
+    if ( EEP_ADDR_END < unStartAddress + 3 ){
+        return;
+    }
+    
+    dw2b.dword = ulData;
+    EepWt( unStartAddress,     dw2b.byte[0] );
+    EepWt( unStartAddress + 1, dw2b.byte[1] );
+    EepWt( unStartAddress + 2, dw2b.byte[2] );
+    EepWt( unStartAddress + 3, dw2b.byte[3] );
+}
+
+ulong EepRdDword( uint unStartAddress )
+{
+    DW2B dw2b;
+    
+    if ( EEP_ADDR_END < unStartAddress + 3 ){
+        return -1;
+    }
+    
+    dw2b.byte[0] = EepRd( unStartAddress );
+    dw2b.byte[1] = EepRd( unStartAddress  + 1 );
+    dw2b.byte[2] = EepRd( unStartAddress  + 2 );
+    dw2b.byte[3] = EepRd( unStartAddress  + 3 );
+    
+    return (dw2b.dword);
+}
 
 double EepRdFloat( uint unStartAddress )
 {
@@ -33,7 +112,7 @@ void EepWtFloat( uint unStartAddress, double fData )
 
 // Read data from EEPROM
 // Address: 0x0000 - 0x01FF (Size:512x8bits)
-uchar EepRd( uint unAddress )
+static uchar EepRd( uint unAddress )
 {
     uchar ucBuf;
     uchar sreg;
@@ -55,7 +134,7 @@ uchar EepRd( uint unAddress )
 
 // Write data to EEPROM
 // Address: 0x0000 - 0x01FF (Size:512x8bits)
-void EepWt( uint unAddress, uchar ucData )
+static void EepWt( uint unAddress, uchar ucData )
 {
     uchar sreg;
     
