@@ -124,7 +124,7 @@ static void putx( ulong ulSrc, ulong ulMaxDiv )
     ulong ulDiv;
 
     // find the first significant figures.
-    for ( ulDiv = ulMaxDiv; ulDiv; ulDiv /= 10 ){
+    for ( ulDiv = ulMaxDiv; 1 < ulDiv; ulDiv /= 10 ){
         if ( ulSrc / ulDiv ){
             break;
         }
@@ -265,10 +265,10 @@ static void myputf( float f )
 
 inline bool myIsDigit( const char* str, int nLen )
 {
-	while ( nLen-- ){
-		if (!isdigit(*str++)){
-			return FALSE;
-		}
-	}
-	return TRUE;
+    while ( nLen-- ){
+        if (!isdigit(*str++)){
+            return FALSE;
+        }
+    }
+    return TRUE;
 }
