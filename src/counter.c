@@ -97,6 +97,15 @@ static void SetTc0Top( uint unCntTop )
     }
 }
 
+void CounterSetCnt( uchar ucIndex, uint unData )
+{
+    if ( CNT_NUM <= ucIndex ){
+        return;
+    }
+    
+    unCnt[ucIndex] = unData;
+}
+
 
 /*----------------------------------------------- T/C0 Compare Match Event --*/
 ISR( TIMER0_COMP_vect )
