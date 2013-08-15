@@ -47,5 +47,14 @@ typedef union {
     double  d;
 }D2C;
 
+typedef union {
+    uchar   byte[2];
+    uint    word;
+} W2B;
+
+typedef union {
+    uchar   byte[4];
+    ulong   dword;
+} DW2B;
 
 #endif /* __COMMON_H__ */
