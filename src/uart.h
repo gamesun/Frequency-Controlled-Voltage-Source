@@ -37,9 +37,9 @@ extern void putstr( char* );
 
 extern void putuc( uchar );
 extern void putsc( schar );
-extern void putn( uint );
+extern void putun( uint );
 extern void putsn( sint );
-extern void putl( ulong );
+extern void putul( ulong );
 extern void putsl( slong );
 extern void putf( float );
 

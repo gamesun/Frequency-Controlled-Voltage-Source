@@ -153,7 +153,7 @@ void putsc( schar scSrc )
     }
 }
 
-void putn( uint unSrc )
+void putun( uint unSrc )
 {
     putx( (ulong)unSrc, 10000 );
 }
@@ -163,14 +163,14 @@ void putsn( sint snSrc )
     if ( 0 == snSrc ){
         pgmputs( "0" );
     } else if ( 0 < snSrc ){
-        putn( (uint)snSrc );
+        putun( (uint)snSrc );
     } else {
         pgmputs( "-" );
-        putn( (uint)(-snSrc) );
+        putun( (uint)(-snSrc) );
     }
 }
 
-void putl( ulong ulSrc )
+void putul( ulong ulSrc )
 {
     putx( (ulong)ulSrc, 1000000000UL );
 }
@@ -180,10 +180,10 @@ void putsl( slong slSrc )
     if ( 0 == slSrc ){
         pgmputs( "0" );
     } else if ( 0 < slSrc ){
-        putl( (ulong)slSrc );
+        putul( (ulong)slSrc );
     } else {
         pgmputs( "-" );
-        putl( (ulong)(-slSrc) );
+        putul( (ulong)(-slSrc) );
     }
 
 }
