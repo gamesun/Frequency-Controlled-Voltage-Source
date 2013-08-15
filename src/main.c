@@ -70,11 +70,15 @@ static void InitDevices( void )
 */
 static void IOPortInit( void )
 {
-    DDRA  = 0xC0;                           // PA6,7  Output
+    DDRA  = 0xFF;                           // PA0..7 Output
     DDRB  = 0xFF;                           // PB0..7 Output
-    DDRC  = 0x00;                           // PC0,1  Input
+    DDRC  = 0xFF;                           // PC0..7 Output
     DDRD  = 0b10111110;                     // PD7,5,4,3,2 Output,,PD1-TxD,PD0-RxD
-    PORTD = 0x00;
+
+    PORTA = 0b00000000;                     // PA Low
+    PORTB = 0b00010000;                     // PB4 High
+    PORTC = 0b00000000;                     // PC Low
+    PORTD = 0b00000000;                     // PD Low
 }
 
 
