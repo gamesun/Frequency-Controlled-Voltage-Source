@@ -75,10 +75,6 @@ void UartInit( void )
     UCSRB = 0x00;                   // close uart
     UCSRC = _BV(URSEL) | 0x06;      // 8 databits
 
-//    UCSRA = 0x02;                   // freq x 2
-//    UBRRH = 0x00;
-//    UBRRL = 207;                    // BaudRate:9615 @ 16Mhz Crystal Freq
-
 #undef BAUD  // avoid compiler warning
 #define BAUD 9600
 #include <util/setbaud.h>
