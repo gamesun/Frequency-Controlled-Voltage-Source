@@ -7,9 +7,10 @@
 #include "uart.h"
 
 
-const char szRxCmdCR  PROGMEM = 13;     // Carriage Return
-const char szRxCmdBS  PROGMEM = 8;      // BackSpace
-
+const char chCR  PROGMEM = 13;     // CR (Carriage Return)
+const char chLF  PROGMEM = 10;     // LF£¨Line Feed)
+const char chBS  PROGMEM = 8;      // BackSpace
+const char chSP  PROGMEM = 32;     // Space
 
 static uchar st_ucRxBuff[RECV_BUF_SIZE];
 static uchar st_ucRxBuffIdx;
@@ -51,13 +52,18 @@ ISR( USART_RXC_vect )
     ucRxBuff = UDR;
     myputc( ucRxBuff );
     
-    if ( szRxCmdCR == ucRxBuff ){           // CR
+    if ( chCR == ucRxBuff ){            // CR
+        if ( 0 == st_ucRxBuffIdx ){     // input is only a CR, do nothing.
+            return;
+        }
         st_bRxCmdEnd = TRUE;
         return;
-    }else if ( szRxCmdBS == ucRxBuff ){     // BackSpace
+    }else if ( chBS == ucRxBuff ){      // BackSpace
         if ( 0 < st_ucRxBuffIdx ){
             st_ucRxBuffIdx--;
-            pgmputs( "\x20\b" );
+//            pgmputs( "\x20\b" );
+            myputc( chSP );
+            myputc( chBS );
         }
         return;
     }
