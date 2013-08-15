@@ -6,6 +6,8 @@
 #include "common.h"
 #include "cmd.h"
 #include "uart.h"
+#include "counter.h"
+#include "dac.h"
 
 #define CMD_LEN         10
 #define ARG_NUM         4
@@ -38,12 +40,14 @@ static void dbgPutCmd( PST_CMD pstCmd );
 static void CmdStart( PST_CMD );
 static void CmdSetCnt( PST_CMD );
 static void CmdSetTime( PST_CMD );
+static void CmdSetVol( PST_CMD );
 
 static ST_CMD_MATRIX stCmdMatrix[] = {
     
     { "start",      CmdStart        },
     { "setcnt",     CmdSetCnt       },
     { "settime",    CmdSetTime      },
+    { "setvol",     CmdSetVol       },
     
     { "",           NULL            }  // Placing NULL at the end.
 };
@@ -177,6 +181,7 @@ static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
 static void CmdStart( PST_CMD pstCmd )
 {
     pgmputs( "CmdStart\n" );
+    CounterStart();
 }
 
 
@@ -193,14 +198,20 @@ static void CmdSetCnt( PST_CMD pstCmd )
         pgmputs( "  num  from 1 to 65535.\n" );
     }
     
-//    pstCmd->unArgs[0]
-//    pstCmd->unArgs[1]
+    CounterSetCnt( (uchar)pstCmd->unArgs[0], pstCmd->unArgs[1] );
 }
 
 
 static void CmdSetTime( PST_CMD pstCmd )
 {
     pgmputs( "CmdSetTime\n" );
+}
+
+static void CmdSetVol( PST_CMD pstCmd )
+{
+    dbgPutCmd( pstCmd );
+    
+    SetVoltage( pstCmd->unArgs[0] );
 }
 
 static void dbgPutCmd( PST_CMD pstCmd )
