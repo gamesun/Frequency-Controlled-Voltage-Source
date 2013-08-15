@@ -7,14 +7,19 @@
 #include "cmd.h"
 #include "uart.h"
 
-#define CMD_NUM         8
-#define CMD_LEN         16
-
-#define ARG_NUM         8
+#define CMD_LEN         10
+#define ARG_NUM         4
 #define ARG_LEN         8
 
 
 #define CMD_BUFF_LEN    RECV_BUF_SIZE
+
+
+#define CMD_CNV_SUCCEED         0
+#define ERR_CMD_TOO_LONG        -1
+#define CMD_ARG_TOO_LONG        -2
+#define CMD_ARG_TOO_MANY        -3
+
 
 typedef struct cmd {
     char szCmd[CMD_LEN];
@@ -28,7 +33,8 @@ typedef struct cmd_Matrix {
 } ST_CMD_MATRIX;
 
 static void CmdExecute( PST_CMD );
-static uchar CmdCnvArgs( char * pcStr, PST_CMD pstCmd );
+static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd );
+static void dbgPutCmd( PST_CMD pstCmd );
 static void CmdStart( PST_CMD );
 static void CmdSetCnt( PST_CMD );
 static void CmdSetTime( PST_CMD );
@@ -46,6 +52,7 @@ static ST_CMD_MATRIX stCmdMatrix[] = {
 
 void CmdHandle( void )
 {
+    schar scResult;
     uchar i;
     char szBuff[CMD_BUFF_LEN];
     ST_CMD stCmd;
@@ -54,11 +61,33 @@ void CmdHandle( void )
         for ( i = 0; ucCmdBuff[i] != 0; i++ ){
             szBuff[i] = ucCmdBuff[i];
         }
+        szBuff[i] = 0;
         bIsCmdExist = FALSE;
 
-        CmdCnvArgs( szBuff, &stCmd );
-
-        CmdExecute( &stCmd );
+        scResult = CmdCnvArgs( szBuff, &stCmd );
+        
+        switch ( scResult ){
+        case CMD_CNV_SUCCEED:
+            CmdExecute( &stCmd );
+            break;
+        case ERR_CMD_TOO_LONG:
+            pgmputs( "your command is too long.(longer than " );
+            putuc( CMD_LEN );
+            pgmputs( ")\n" );
+            break;
+        case CMD_ARG_TOO_LONG:
+            pgmputs( "an argument is too long.(longer than " );
+            putuc( ARG_LEN );
+            pgmputs( ")\n" );
+            break;
+        case CMD_ARG_TOO_MANY:
+            pgmputs( "arguments are too many.(more than " );
+            putuc( ARG_NUM );
+            pgmputs( ")\n" );
+            break;
+        default:
+            break;
+        }
     }
 }
 
@@ -68,7 +97,7 @@ static void CmdExecute( PST_CMD pstCmd )
     uchar i;
     
     for ( i = 0; stCmdMatrix[i].pf_HandleFunc != NULL; i++ ){
-        if ( 0 ){
+        if ( 0 == strcmp( stCmdMatrix[i].szCmd, pstCmd->szCmd ) ){
             stCmdMatrix[i].pf_HandleFunc( pstCmd );
             break;
         }
@@ -82,7 +111,7 @@ static void CmdExecute( PST_CMD pstCmd )
 const char szSpace  PROGMEM = 32;
 const char szTab  PROGMEM = 9;
 
-static uchar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
+static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
 {
     uchar ucArgsIdx;
     bool bIsBlank;
@@ -105,9 +134,7 @@ static uchar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
                         pstCmd->unArgs[ucArgsIdx - 1] = atoi( szBuff );
                         ucBuffCnt = 0;
                     } else {
-                        pgmputs( "too many arguments.(>" );
-                        putuc( (uchar)ARG_NUM );
-                        pgmputs( ")" );
+                        return CMD_ARG_TOO_MANY;
                     }
                 }
                 
@@ -118,32 +145,74 @@ static uchar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
                 if ( ucCmdCnt < CMD_LEN ){
                     pstCmd->szCmd[ucCmdCnt++] = *pcStr;
                 } else {
-                    pgmputs( "too long command.(>8)" );
-                    putuc( (uchar)CMD_LEN );
-                    pgmputs( ")" );
+                    return ERR_CMD_TOO_LONG;
+                }
+            } else {
+                if ( ucBuffCnt < ARG_LEN ){
+                    szBuff[ucBuffCnt++] = *pcStr;
+                } else {
+                    return CMD_ARG_TOO_LONG;
                 }
             }
         }
     }
     
-    return ucArgsIdx;
+    pstCmd->szCmd[ucCmdCnt] = 0;
+
+    // the last argument
+    if ( 0 < ucArgsIdx ){
+        if ( ucArgsIdx - 1 < ARG_NUM ){
+            pstCmd->unArgs[ucArgsIdx - 1] = atoi( szBuff );
+            ucBuffCnt = 0;
+        } else {
+            return CMD_ARG_TOO_MANY;
+        }
+    }
+    pstCmd->ucArgsCnt = ucArgsIdx;
+
+    return CMD_CNV_SUCCEED;
 }
 
 
 static void CmdStart( PST_CMD pstCmd )
 {
-    
+    pgmputs( "CmdStart\n" );
 }
 
 
 static void CmdSetCnt( PST_CMD pstCmd )
 {
     
+    pgmputs( "CmdSetCnt\n" );
+    
+    dbgPutCmd( pstCmd );
+    
+    if ( 2 != pstCmd->ucArgsCnt ){
+        pgmputs( "usage:\nsetcnt c num\n" );
+        pgmputs( "  c    from 2 to 5.\n" );
+        pgmputs( "  num  from 1 to 65535.\n" );
+    }
+    
+//    pstCmd->unArgs[0]
+//    pstCmd->unArgs[1]
 }
 
 
 static void CmdSetTime( PST_CMD pstCmd )
 {
-    
+    pgmputs( "CmdSetTime\n" );
 }
 
+static void dbgPutCmd( PST_CMD pstCmd )
+{
+    uchar i;
+
+    pgmputs( "args:" );
+    for ( i = 0; i < pstCmd->ucArgsCnt - 1; i++ ){
+        putun( pstCmd->unArgs[i] );
+        pgmputs( "," );
+    }
+    
+    putun( pstCmd->unArgs[i] );
+    pgmputs( "\n" );
+}
