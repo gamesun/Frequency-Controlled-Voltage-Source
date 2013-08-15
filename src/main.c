@@ -20,6 +20,7 @@ int main( void )
     
     
     while ( 1 ){
+        UartHandle();
         CmdHandle();
     }
     
