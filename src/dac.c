@@ -37,7 +37,9 @@ static void SetDacData( uint unVolIn10bits )
         ucBuff[0] = unVolIn10bits >> 8;
         ucBuff[1] = unVolIn10bits & 0xff;
         
+        PORTB &= ~_BV(4);
         SpiTransmit( ucBuff, 2 );
+        
     }
 }
 

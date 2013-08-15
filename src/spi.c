@@ -66,6 +66,8 @@ ISR( SPI_STC_vect )
     if ( 0 < ucSpiTxDataRemainLen ){
         ucSpiTxDataRemainLen--;
         SPDR = ucSpiTxDataRemain[ucSpiTxDataIdx++];
+    } else {
+        PORTB |= _BV(4);
     }
 }
 
