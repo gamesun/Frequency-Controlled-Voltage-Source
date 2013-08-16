@@ -13,11 +13,12 @@ const char chBS  PROGMEM = 8;      // BackSpace
 const char chSP  PROGMEM = 32;     // Space
 
 static uchar st_ucRxBuff[RECV_BUF_SIZE];
-static uchar st_ucRxBuffIdx;
-static bool  st_bRxCmdEnd;
+static volatile uchar st_ucRxBuffIdx;
+static volatile bool  st_bRxCmdEnd;
+static volatile uchar st_ucRxCharPrevious;
 
 uchar ucCmdBuff[RECV_BUF_SIZE];
-bool bIsCmdExist;
+volatile bool bIsCmdExist;
 
 inline bool myIsDigit( const char* str, int nLen );
 static void myputc( char );
@@ -29,53 +30,71 @@ void UartHandle( void )
 {
     uchar   ucLen;
     uchar   i;
-
+    
     if ( st_bRxCmdEnd ){
         st_bRxCmdEnd = FALSE;
 
         UCSRB &= ~_BV( RXCIE );       // RX INT Off
-        ucLen = MIN( st_ucRxBuffIdx, RECV_BUF_SIZE );
-        for ( i = 0; i < ucLen; i++ ){
-            ucCmdBuff[i] = st_ucRxBuff[i];
+        
+        if ( ( 1 == st_ucRxBuffIdx ) && 
+        		( chLF == st_ucRxBuff[0] ) && ( chCR == st_ucRxCharPrevious ) ){
+        	;	// the second char 'LF' of 'CR+LF'.
+        } else if ( ( ( 1 == st_ucRxBuffIdx ) && 
+                ( ( chCR == st_ucRxBuff[0] ) ||     // CR
+                ( chLF == st_ucRxBuff[0] ) ) ) ||   // LF
+            ( ( 2 == st_ucRxBuffIdx ) && 
+                ( chCR == st_ucRxBuff[0] ) &&       // CR+LF
+                ( chLF == st_ucRxBuff[1] ) ) ){
+        	pgmputs( ">" );           // input is only a CR(or LF or CR+LF).
+        } else {
+            ucLen = MIN( st_ucRxBuffIdx, RECV_BUF_SIZE );
+            for ( i = 0; i < ucLen; i++ ){
+                ucCmdBuff[i] = st_ucRxBuff[i];
+            }
+            
+            ucCmdBuff[i] = 0;
+            bIsCmdExist = TRUE;
         }
+        
         st_ucRxBuffIdx = 0;
+        
         UCSRB |= _BV( RXCIE );        // RX INT On
-        ucCmdBuff[i] = 0;
-        bIsCmdExist = TRUE;
     }
 }
 
 ISR( USART_RXC_vect )
 {
-    uchar ucRxBuff;
+    static volatile uchar ucRxBuff = 0;
+    
+    st_ucRxCharPrevious = ucRxBuff;
     
     ucRxBuff = UDR;
     myputc( ucRxBuff );
     
-    if ( chCR == ucRxBuff ){            // CR
-        if ( 0 == st_ucRxBuffIdx ){     // input is only a CR, do nothing.
-            return;
-        }
-        st_bRxCmdEnd = TRUE;
-        return;
-    }else if ( chBS == ucRxBuff ){      // BackSpace
+    if ( chBS == ucRxBuff ){      // BackSpace
         if ( 0 < st_ucRxBuffIdx ){
             st_ucRxBuffIdx--;
-//            pgmputs( "\x20\b" );
             myputc( chSP );
             myputc( chBS );
         }
-        return;
+    } else {
+		if ( ( chCR == ucRxBuff ) || ( chLF == ucRxBuff )){            // CR
+			st_bRxCmdEnd = TRUE;
+		} else {
+			if ( st_ucRxBuffIdx < RECV_BUF_SIZE ){
+				st_ucRxBuff[st_ucRxBuffIdx++] = ucRxBuff;
+			} else {
+	        	st_bRxCmdEnd = TRUE;
+	        }
+		} 
     }
-    
-    st_ucRxBuff[st_ucRxBuffIdx++] = ucRxBuff ;
-
 }
 
 void UartInit( void )
 {
     st_bRxCmdEnd = FALSE;
     st_ucRxBuffIdx = 0;
+    st_ucRxCharPrevious = 0;
     memset( st_ucRxBuff,  0, RECV_BUF_SIZE  );
 
     UCSRB = 0x00;                   // close uart
@@ -117,6 +136,11 @@ void putstr_p( const char *pStr )
 {
     while( pgm_read_byte(pStr) != 0 )
         myputc(pgm_read_byte(pStr++));
+}
+
+void putch( char c )
+{
+	myputc( c );
 }
 
 static void putx( ulong ulSrc, ulong ulMaxDiv )

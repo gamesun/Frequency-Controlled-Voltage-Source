@@ -34,7 +34,7 @@ extern void UartInit( void );
 #define pgmputs(str) putstr_p( PSTR( str ))
 extern void putstr_p( const char* );
 extern void putstr( char* );
-
+extern void putch( char );
 extern void putuc( uchar );
 extern void putsc( schar );
 extern void putun( uint );
@@ -46,6 +46,6 @@ extern void putf( float );
 extern uint g_dbgLCD;
 
 extern uchar ucCmdBuff[RECV_BUF_SIZE];
-extern bool bIsCmdExist;
+extern volatile bool bIsCmdExist;
 
 #endif /* __UART_H__ */
