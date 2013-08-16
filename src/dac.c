@@ -8,7 +8,7 @@
 #include "spi.h"
 
 #define DAC_V_MIN           0       // 0.00V
-#define DAC_V_REF           100     // 1.00V
+#define DAC_V_REF           250     // 2.50V
 #define DAC_V_MAX           (DAC_V_REF * 1023ul / 512ul)
 
 static void SetDacData( uint unVolIn10bits );
@@ -39,7 +39,6 @@ static void SetDacData( uint unVolIn10bits )
         
         PORTB &= ~_BV(4);
         SpiTransmit( ucBuff, 2 );
-        
     }
 }
 
