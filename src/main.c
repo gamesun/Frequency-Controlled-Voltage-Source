@@ -18,7 +18,10 @@ int main( void )
     
     InitDevices();
     
-    
+    pgmputs( "\nWelcome to Frequency-Controlled-Voltage-Source.\n\n" );
+    pgmputs( "If you want a list of all supported commands type 'help'.\n" );
+    pgmputs( ">" );
+
     while ( 1 ){
         UartHandle();
         CmdHandle();

@@ -92,6 +92,8 @@ void CmdHandle( void )
         default:
             break;
         }
+        
+        pgmputs( "\n>" );
     }
 }
 
@@ -189,10 +191,10 @@ static void CmdSetCnt( PST_CMD pstCmd )
     dbgPutCmd( pstCmd );
     
     if ( 2 != pstCmd->ucArgsCnt ){
-        pgmputs( "invalid arguments.\n\n" );
-        pgmputs( "usage:\nsetcnt c num\n" );
-        pgmputs( "  c    from 2 to 5.\n" );
-        pgmputs( "  num  from 1 to 65535.\n" );
+        pgmputs( "bad arguments.\n\n" );
+        pgmputs( "usage: setcnt c n\n" );
+        pgmputs( "  c -> from 2 to 5.\n" );
+        pgmputs( "  n -> from 1 to 65535.\n" );
     }
     
     CounterSetCnt( (uchar)pstCmd->unArgs[0], pstCmd->unArgs[1] );
@@ -209,9 +211,9 @@ static void CmdSetVol( PST_CMD pstCmd )
     dbgPutCmd( pstCmd );
     
     if ( 1 != pstCmd->ucArgsCnt ){
-        pgmputs( "invalid arguments.\n\n" );
-        pgmputs( "usage:\nsetvol v\n" );
-        pgmputs( "  v    from 0 to 500 (500 means 5.00V).\n" );
+        pgmputs( "bad arguments.\n\n" );
+        pgmputs( "usage: setvol v\n" );
+        pgmputs( "  v -> from 0 to 500 (500 means 5.00V).\n" );
     }
     
     SetVoltage( pstCmd->unArgs[0] );
