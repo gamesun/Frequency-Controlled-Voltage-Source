@@ -38,20 +38,20 @@ void UartHandle( void )
         
         if ( ( 1 == st_ucRxBuffIdx ) && 
         		( chLF == st_ucRxBuff[0] ) && ( chCR == st_ucRxCharPrevious ) ){
-        	;	// the second char 'LF' of 'CR+LF'.
+        	;			// the second char 'LF' of 'CR+LF'.
         } else if ( ( ( 1 == st_ucRxBuffIdx ) && 
                 ( ( chCR == st_ucRxBuff[0] ) ||     // CR
                 ( chLF == st_ucRxBuff[0] ) ) ) ||   // LF
             ( ( 2 == st_ucRxBuffIdx ) && 
                 ( chCR == st_ucRxBuff[0] ) &&       // CR+LF
                 ( chLF == st_ucRxBuff[1] ) ) ){
-        	pgmputs( ">" );           // input is only a CR(or LF or CR+LF).
+        	pgmputs( "\n>" );           // input is only a CR(or LF or CR+LF).
         } else {
             ucLen = MIN( st_ucRxBuffIdx, RECV_BUF_SIZE );
-            for ( i = 0; i < ucLen; i++ ){
+            for ( i = 0; i < ucLen && chCR != st_ucRxBuff[i] && chLF != st_ucRxBuff[i]; i++ ){
                 ucCmdBuff[i] = st_ucRxBuff[i];
             }
-            
+            pgmputs( "\n" );
             ucCmdBuff[i] = 0;
             bIsCmdExist = TRUE;
         }
@@ -69,7 +69,6 @@ ISR( USART_RXC_vect )
     st_ucRxCharPrevious = ucRxBuff;
     
     ucRxBuff = UDR;
-    myputc( ucRxBuff );
     
     if ( chBS == ucRxBuff ){      // BackSpace
         if ( 0 < st_ucRxBuffIdx ){
@@ -78,15 +77,16 @@ ISR( USART_RXC_vect )
             myputc( chBS );
         }
     } else {
-		if ( ( chCR == ucRxBuff ) || ( chLF == ucRxBuff )){            // CR
-			st_bRxCmdEnd = TRUE;
-		} else {
-			if ( st_ucRxBuffIdx < RECV_BUF_SIZE ){
-				st_ucRxBuff[st_ucRxBuffIdx++] = ucRxBuff;
-			} else {
-	        	st_bRxCmdEnd = TRUE;
-	        }
-		} 
+        if ( st_ucRxBuffIdx < RECV_BUF_SIZE ){
+            st_ucRxBuff[st_ucRxBuffIdx++] = ucRxBuff;
+            if ( ( chCR == ucRxBuff ) || ( chLF == ucRxBuff )){            // CR
+                st_bRxCmdEnd = TRUE;
+            } else {
+                myputc( ucRxBuff );
+            }
+        } else {
+        	st_bRxCmdEnd = TRUE;
+        }
     }
 }
 
