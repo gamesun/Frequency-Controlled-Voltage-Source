@@ -34,7 +34,7 @@ typedef struct cmd_Matrix {
     void (*pf_HandleFunc)( PST_CMD );
 } ST_CMD_MATRIX;
 
-static void CmdExecute( PST_CMD );
+static void CmdMatchAndExecute( PST_CMD );
 static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd );
 static void dbgPutCmd( PST_CMD pstCmd );
 static void CmdHelp( PST_CMD );
@@ -45,8 +45,8 @@ static void CmdSetVol( PST_CMD );
 static void CmdVolt( PST_CMD );
 
 static ST_CMD_MATRIX stCmdMatrix[] = {
-	
-	{ "help",       CmdHelp			},
+    
+    { "help",       CmdHelp         },
     { "start",      CmdStart        },
     { "setcnt",     CmdSetCnt       },
     { "settime",    CmdSetTime      },
@@ -77,7 +77,7 @@ void CmdHandle( void )
         
         switch ( scResult ){
         case CMD_CNV_SUCCEED:
-            CmdExecute( &stCmd );
+            CmdMatchAndExecute( &stCmd );
             break;
         case ERR_CMD_TOO_LONG:
             pgmputs( "your command is too long.(longer than " );
@@ -103,7 +103,7 @@ void CmdHandle( void )
 }
 
 
-static void CmdExecute( PST_CMD pstCmd )
+static void CmdMatchAndExecute( PST_CMD pstCmd )
 {
     uchar i;
     
@@ -118,8 +118,6 @@ static void CmdExecute( PST_CMD pstCmd )
         pgmputs( "invalid command.\n" );
     }
 }
-
-
 
 
 static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
@@ -197,7 +195,7 @@ pgmputs( "\
   volt       directly set the voltage.\n\
 "
 );
-	
+
 }
 
 
@@ -244,7 +242,7 @@ static void CmdVolt( PST_CMD pstCmd )
         pgmputs( "  v -> from 0 to 500 (500 means 5.00V).\n" );
     }
     
-    SetVoltage( pstCmd->unArgs[0] );
+    SetVoltageByValue( pstCmd->unArgs[0] );
 }
 
 
@@ -252,18 +250,15 @@ static void dbgPutCmd( PST_CMD pstCmd )
 {
     uchar i;
 
-    pgmputs( "args:" );
-    
-    if ( 0 == pstCmd->ucArgsCnt ){
-        pgmputs( "none\n" );
-        return;
-    }
-    
-    for ( i = 0; i < pstCmd->ucArgsCnt - 1; i++ ){
+    if ( 0 < pstCmd->ucArgsCnt ){        
+        pgmputs( "args:" );
+        
+        for ( i = 0; i < pstCmd->ucArgsCnt - 1; i++ ){
+            putun( pstCmd->unArgs[i] );
+            pgmputs( "," );
+        }
+        
         putun( pstCmd->unArgs[i] );
-        pgmputs( "," );
+        pgmputs( "\n" );
     }
-    
-    putun( pstCmd->unArgs[i] );
-    pgmputs( "\n" );
 }
