@@ -6,6 +6,7 @@
 #include "common.h"
 #include "port.h"
 #include "dac.h"
+#include "counter.h"
 
 #define PORT_EN         PORTA
 #define PORT_EN_BIT     _BV(0)
@@ -36,6 +37,7 @@ static void PortTrigger( void )
     if ( signal_EN == FALLING_EDGE ){
         signal_EN = NONE_EDGE;
         SetVoltageByVTable( 1 );    // V1
+        CounterStart();
     } else if ( signal_EN == RISING_EDGE ){
         signal_EN = NONE_EDGE;
         SetVoltageByValue( 0 );     // 0.00V
