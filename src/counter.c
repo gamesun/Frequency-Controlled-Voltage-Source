@@ -106,6 +106,17 @@ void SetCTable( uchar ucIndex, uint unData )
 }
 
 
+uint GetCTable( uchar ucIndex )
+{
+    if ( CTABLE_LEN <= ucIndex ){
+        pgmputs( "IllegalAccess at GetCTable() [counter.c]\n" );
+        return -1;
+    }
+    
+    return unCTable[ucIndex - 1];
+}
+
+
 /*----------------------------------------------- T/C0 Compare Match Event --*/
 ISR( TIMER0_COMP_vect )
 {

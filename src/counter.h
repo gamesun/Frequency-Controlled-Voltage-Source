@@ -11,5 +11,6 @@
 extern void CounterInit( void );
 extern void CounterStart( void );
 extern void SetCTable( uchar ucIndex, uint unData );
+extern uint GetCTable( uchar ucIndex );
 
 #endif /* __COUNTER_H__ */
