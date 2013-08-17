@@ -37,22 +37,27 @@ typedef struct cmd_Matrix {
 static void CmdExecute( PST_CMD );
 static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd );
 static void dbgPutCmd( PST_CMD pstCmd );
+static void CmdHelp( PST_CMD );
 static void CmdStart( PST_CMD );
 static void CmdSetCnt( PST_CMD );
 static void CmdSetTime( PST_CMD );
 static void CmdSetVol( PST_CMD );
+static void CmdVolt( PST_CMD );
 
 static ST_CMD_MATRIX stCmdMatrix[] = {
-    
+	
+	{ "help",       CmdHelp			},
     { "start",      CmdStart        },
     { "setcnt",     CmdSetCnt       },
     { "settime",    CmdSetTime      },
     { "setvol",     CmdSetVol       },
+    { "volt",       CmdVolt         },
     
     { "",           NULL            }  // Placing NULL at the end.
 };
 
-
+const char szSpace  PROGMEM = 32;
+const char szTab    PROGMEM = 9;
 
 void CmdHandle( void )
 {
@@ -114,8 +119,8 @@ static void CmdExecute( PST_CMD pstCmd )
     }
 }
 
-const char szSpace  PROGMEM = 32;
-const char szTab  PROGMEM = 9;
+
+
 
 static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
 {
@@ -180,6 +185,22 @@ static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
 }
 
 
+static void CmdHelp( PST_CMD pstCmd )
+{
+
+pgmputs( "\
+  help       display this message.\n\
+  start      start working.\n\
+  setcnt     set the counter values.\n\
+  settime    set the time values.\n\
+  setvol     set the voltage.\n\
+  volt       directly set the voltage.\n\
+"
+);
+	
+}
+
+
 static void CmdStart( PST_CMD pstCmd )
 {
     CounterStart();
@@ -206,18 +227,26 @@ static void CmdSetTime( PST_CMD pstCmd )
     dbgPutCmd( pstCmd );
 }
 
+
 static void CmdSetVol( PST_CMD pstCmd )
+{
+
+}
+
+
+static void CmdVolt( PST_CMD pstCmd )
 {
     dbgPutCmd( pstCmd );
     
     if ( 1 != pstCmd->ucArgsCnt ){
         pgmputs( "bad arguments.\n\n" );
-        pgmputs( "usage: setvol v\n" );
+        pgmputs( "usage: volt v\n" );
         pgmputs( "  v -> from 0 to 500 (500 means 5.00V).\n" );
     }
     
     SetVoltage( pstCmd->unArgs[0] );
 }
+
 
 static void dbgPutCmd( PST_CMD pstCmd )
 {
