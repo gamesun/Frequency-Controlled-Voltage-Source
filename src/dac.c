@@ -7,6 +7,7 @@
 #include "setting.h"
 #include "dac.h"
 #include "spi.h"
+#include "uart.h"
 
 #define DAC_V_MIN           0       // 0.00V
 #define DAC_V_REF           250     // 2.50V
@@ -23,20 +24,29 @@ static uint CnvDacCode( uint unVol100times );
 // ucIndex: 1 - VTABLE_LEN
 void SetVoltageByVTable( uchar ucIndex )
 {
-    SetVoltageByValue( unVTable[ucIndex - 1] );
+    if ( ucIndex < VTABLE_LEN ){
+        SetVoltageByValue( unVTable[ucIndex - 1] );
+    }
 }
 
 
 // ucIndex: 1 - VTABLE_LEN
 void SetVTable( uchar ucIndex, uint unVol100times )
 {
-    unVTable[ucIndex - 1] = unVol100times;
+    if ( ucIndex < VTABLE_LEN ){
+        unVTable[ucIndex - 1] = unVol100times;
+    }
 }
 
 
 // ucIndex: 1 - VTABLE_LEN
 uint GetVTable( uchar ucIndex )
 {
+    if ( VTABLE_LEN <= ucIndex ){
+        pgmputs( "Exception in GetVTable()\n" );
+        return -1;
+    }
+    
     return unVTable[ucIndex - 1];
 }
 
