@@ -42,8 +42,8 @@ void SetVTable( uchar ucIndex, uint unVol100times )
 // ucIndex: 1 - VTABLE_LEN
 uint GetVTable( uchar ucIndex )
 {
-    if ( VTABLE_LEN <= ucIndex ){
-        pgmputs( "Exception in GetVTable()\n" );
+    if ( VTABLE_LEN < ucIndex ){
+        pgmputs( "IllegalAccess at GetVTable() [dac.c]\n" );
         return -1;
     }
     
