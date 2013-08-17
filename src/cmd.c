@@ -8,20 +8,19 @@
 #include "uart.h"
 #include "counter.h"
 #include "dac.h"
+#include "setting.h"
 
 #define CMD_LEN         10
 #define ARG_NUM         4
 #define ARG_LEN         8
-
-
 #define CMD_BUFF_LEN    RECV_BUF_SIZE
-
 
 #define CMD_CNV_SUCCEED         0
 #define ERR_CMD_TOO_LONG        -1
 #define CMD_ARG_TOO_LONG        -2
 #define CMD_ARG_TOO_MANY        -3
 
+#define TABLE_LEN               STAGE_NUM
 
 typedef struct cmd {
     char szCmd[CMD_LEN];
@@ -34,22 +33,23 @@ typedef struct cmd_Matrix {
     void (*pf_HandleFunc)( PST_CMD );
 } ST_CMD_MATRIX;
 
+
 static void CmdMatchAndExecute( PST_CMD );
 static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd );
+static bool IsInRange( uint unData, uint unMin, uint unMax );
 static void dbgPutCmd( PST_CMD pstCmd );
 static void CmdHelp( PST_CMD );
 static void CmdList( PST_CMD );
 static void CmdSetCnt( PST_CMD );
-static void CmdSetTime( PST_CMD );
 static void CmdSetVol( PST_CMD );
 static void CmdVolt( PST_CMD );
+
 
 static ST_CMD_MATRIX stCmdMatrix[] = {
     
     { "help",       CmdHelp         },
     { "list",       CmdList         },
     { "setcnt",     CmdSetCnt       },
-    { "settime",    CmdSetTime      },
     { "setvol",     CmdSetVol       },
     { "volt",       CmdVolt         },
     
@@ -183,6 +183,16 @@ static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
 }
 
 
+static bool IsInRange( uint unData, uint unMin, uint unMax )
+{
+    if ( ( unMin <= unData ) && ( unData <= unMax ) ){
+        return TRUE;
+    } else {
+        return FALSE;
+    }
+}
+
+
 static void CmdHelp( PST_CMD pstCmd )
 {
     pgmputs( "  help       display this message.\n" );
@@ -197,28 +207,59 @@ static void CmdHelp( PST_CMD pstCmd )
 
 static void CmdList( PST_CMD pstCmd )
 {
+    uchar i;
+    uint (*C)( uchar );
+    uint (*V)( uchar );
+#   define ps   pgmputs
+#   define pc   putch
     
+    void p6( uint unData )
+    {
+        putunAppendSpace( unData, 6 );
+    }
+    
+    void p8( uint unData )
+    {
+        putunAppendSpace( unData, 8 );
+    }
+    
+    C = GetCTable;
+    V = GetVTable;
+    
+//    for ( i = 0; i < TABLE_LEN; i++ ){
+    ps( "|No.| Count | Voltage |\n" );
+    ps( "+---+-------+---------+\n" );
+    ps( "| 1 | " );p6(C(1));ps("| ");p8(V(1));ps("|\n");
+    ps( "| 2 | " );p6(C(2));ps("| ");p8(V(2));ps("|\n");
+    ps( "| 3 | " );p6(C(3));ps("| ");p8(V(3));ps("|\n");
+    ps( "| 4 | " );p6(C(4));ps("| ");p8(V(4));ps("|\n");
+    ps( "| 5 | " );p6(C(5));ps("| ");p8(V(5));ps("|\n");
+    ps( "| 6 | " );p6(C(6));ps("| ");p8(V(6));ps("|\n");
+//    }
 }
 
 
 static void CmdSetCnt( PST_CMD pstCmd )
 {
+    uint unTmp;
+    
     dbgPutCmd( pstCmd );
     
-    if ( 2 != pstCmd->ucArgsCnt ){
+    if ( ( 2 == pstCmd->ucArgsCnt ) && IsInRange( pstCmd->unArgs[0], 2, 5 ) ){
+        SetCTable( (uchar)pstCmd->unArgs[0], pstCmd->unArgs[1] );
+        unTmp = GetCTable( (uchar)pstCmd->unArgs[0] );
+        
+        pgmputs( "you have set C" );
+        putuc( pstCmd->unArgs[0] );
+        pgmputs( " = " );
+        putun( unTmp );
+        pgmputs( "\n" );
+    } else {
         pgmputs( "bad arguments.\n\n" );
         pgmputs( "usage: setcnt i c\n" );
         pgmputs( "  i -> Index of one count, from 2 to 5.\n" );
         pgmputs( "  c -> value of the Count, from 1 to 65535.\n" );
     }
-    
-    SetCTable( (uchar)pstCmd->unArgs[0], pstCmd->unArgs[1] );
-}
-
-
-static void CmdSetTime( PST_CMD pstCmd )
-{
-    dbgPutCmd( pstCmd );
 }
 
 
@@ -226,20 +267,18 @@ static void CmdSetVol( PST_CMD pstCmd )
 {
     uint unTmp;
     
-    if ( ( 2 == pstCmd->ucArgsCnt ) && 
-            ( 1 <= pstCmd->unArgs[0] ) &&
-            ( pstCmd->unArgs[0] <= 6 ) ){
-        SetVTable( pstCmd->unArgs[0], pstCmd->unArgs[1] );
-        unTmp = GetVTable( pstCmd->unArgs[0] );
+    if ( ( 2 == pstCmd->ucArgsCnt ) && IsInRange( pstCmd->unArgs[0], 1, 6 ) ){
+        SetVTable( (uchar)pstCmd->unArgs[0], pstCmd->unArgs[1] );
+        unTmp = GetVTable( (uchar)pstCmd->unArgs[0] );
         
         pgmputs( "you have set V" );
         putuc( pstCmd->unArgs[0] );
         pgmputs( " = " );
         putun( unTmp );
-        pgmputs( "\n" );
+        pgmputs( "0mV\n" );
         pgmputs( "The Real Voltage will be " );
-        putf( CnvToRealVoltage( unTmp ) );
-        pgmputs( "\n" );
+        putf( CnvToRealVoltage( unTmp ) * 10.0f );
+        pgmputs( "mV\n" );
     } else {
         pgmputs( "bad arguments.\n\n" );
         pgmputs( "usage: setvol i v\n" );
@@ -251,15 +290,20 @@ static void CmdSetVol( PST_CMD pstCmd )
 
 static void CmdVolt( PST_CMD pstCmd )
 {
-    dbgPutCmd( pstCmd );
-    
-    if ( 1 != pstCmd->ucArgsCnt ){
+    if ( 1 == pstCmd->ucArgsCnt ){    
+        SetVoltageByValue( pstCmd->unArgs[0] );
+        
+        pgmputs( "you have set DAC to output " );
+        putun( pstCmd->unArgs[0] );
+        pgmputs( "0mV\n" );
+        pgmputs( "The Real output will be " );
+        putf( CnvToRealVoltage( pstCmd->unArgs[0] ) * 10 );
+        pgmputs( "mV\n" );
+    } else {
         pgmputs( "bad arguments.\n\n" );
         pgmputs( "usage: volt v\n" );
         pgmputs( "  v -> from 0 to 500 (500 means 5.00V).\n" );
     }
-    
-    SetVoltageByValue( pstCmd->unArgs[0] );
 }
 
 
