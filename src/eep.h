@@ -30,12 +30,7 @@
 #define EEP_ADDR_VOL6           (EEP_ADDR_VOL5 + EEP_VOL5_LEN)
 #define EEP_VOL6_LEN            2
 
-#define EEP_ADDR_T1             (EEP_ADDR_VOL6 + EEP_VOL6_LEN)
-#define EEP_T1_LEN              2
-#define EEP_ADDR_T6             (EEP_ADDR_T1 + EEP_T1_LEN)
-#define EEP_T6_LEN              2
-
-#define EEP_ADDR_C2             (EEP_ADDR_T6 + EEP_T6_LEN)
+#define EEP_ADDR_C2             (EEP_ADDR_VOL6 + EEP_VOL6_LEN)
 #define EEP_C2_LEN              2
 #define EEP_ADDR_C3             (EEP_ADDR_C2 + EEP_C2_LEN)
 #define EEP_C3_LEN              2
