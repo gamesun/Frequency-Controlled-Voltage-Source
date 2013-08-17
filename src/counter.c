@@ -108,7 +108,7 @@ void SetCTable( uchar ucIndex, uint unData )
 
 uint GetCTable( uchar ucIndex )
 {
-    if ( CTABLE_LEN <= ucIndex ){
+    if ( CTABLE_LEN < ucIndex ){
         pgmputs( "IllegalAccess at GetCTable() [counter.c]\n" );
         return -1;
     }
