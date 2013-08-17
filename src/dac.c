@@ -11,31 +11,67 @@
 #define DAC_V_REF           250     // 2.50V
 #define DAC_V_MAX           (DAC_V_REF * 1023ul / 512ul)
 
-static void SetDacData( uint unVolIn10bits );
+
+static uint unVTable[6] = { 0 };
+
+static void SetDacCode( uint unDacCode );
+static uint CnvDacCode( uint unVol100times );
+
+
+void SetVoltageByVTable( uchar ucIndex )
+{
+    SetVoltageByValue( unVTable[ucIndex] );
+}
+
+
+void SetVTable( uchar ucIndex, uint unVol100times )
+{
+    unVTable[ucIndex] = unVol100times;
+}
+
+
+uint GetVTable( uchar ucIndex )
+{
+    return unVTable[ucIndex];
+}
+
+
+double CnvToRealVoltage( uint unVol100times )
+{
+    return ( CnvDacCode( unVol100times ) * (double)DAC_V_REF / 512.0f );
+}
+
 
 /*
  voltage range: from 1.00V to 2.00V step 0.01V.
  input parameter: 100 times voltage.
 */
-void SetVoltage( uint unVol100times )
+void SetVoltageByValue( uint unVol100times )
 {
     if ( DAC_V_MAX < unVol100times ){
         unVol100times = DAC_V_MAX;
     }
     
-    SetDacData( (uint)( (ulong)unVol100times * 512ul / DAC_V_REF ) );
+    SetDacCode( CnvDacCode( unVol100times ) );
 }
 
-static void SetDacData( uint unVolIn10bits )
+
+static uint CnvDacCode( uint unVol100times )
+{
+    return (uint)( ( (double)unVol100times * 512.0f / (double)DAC_V_REF ) + 0.5f );
+}
+
+
+static void SetDacCode( uint unDacCode )
 {
     uchar ucBuff[2];
     
     if ( SpiIsBusy() ){
         
     } else {
-        unVolIn10bits <<= 2;
-        ucBuff[0] = unVolIn10bits >> 8;
-        ucBuff[1] = unVolIn10bits & 0xff;
+        unDacCode <<= 2;
+        ucBuff[0] = unDacCode >> 8;
+        ucBuff[1] = unDacCode & 0xff;
         
         PORTB &= ~_BV(4);
         SpiTransmit( ucBuff, 2 );
