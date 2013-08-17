@@ -18,21 +18,24 @@ static void SetDacCode( uint unDacCode );
 static uint CnvDacCode( uint unVol100times );
 
 
+// ucIndex: 1 - 6
 void SetVoltageByVTable( uchar ucIndex )
 {
-    SetVoltageByValue( unVTable[ucIndex] );
+    SetVoltageByValue( unVTable[ucIndex - 1] );
 }
 
 
+// ucIndex: 1 - 6
 void SetVTable( uchar ucIndex, uint unVol100times )
 {
-    unVTable[ucIndex] = unVol100times;
+    unVTable[ucIndex - 1] = unVol100times;
 }
 
 
+// ucIndex: 1 - 6
 uint GetVTable( uchar ucIndex )
 {
-    return unVTable[ucIndex];
+    return unVTable[ucIndex - 1];
 }
 
 
