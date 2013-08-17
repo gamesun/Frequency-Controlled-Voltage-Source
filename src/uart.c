@@ -73,7 +73,8 @@ ISR( USART_RXC_vect )
     if ( chBS == ucRxBuff ){      // BackSpace
         if ( 0 < st_ucRxBuffIdx ){
             st_ucRxBuffIdx--;
-            myputc( chSP );
+            myputc( chBS );
+            myputc( chSP );     // clear the current char on TeraTerm
             myputc( chBS );
         }
     } else {
