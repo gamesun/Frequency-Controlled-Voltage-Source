@@ -18,11 +18,11 @@ static volatile bool  st_bRxCmdEnd;
 static volatile uchar st_ucRxCharPrevious;
 
 uchar ucCmdBuff[RECV_BUF_SIZE];
-volatile bool bIsCmdExist;
+bool bIsCmdExist;
 
 inline bool myIsDigit( const char* str, int nLen );
 static void myputc( char );
-static void putx( ulong, ulong );
+static uchar putx( ulong, ulong );
 static void myputf( float );
 
 
@@ -144,10 +144,11 @@ void putch( char c )
     myputc( c );
 }
 
-static void putx( ulong ulSrc, ulong ulMaxDiv )
+static uchar putx( ulong ulSrc, ulong ulMaxDiv )
 {
     ulong ulDiv;
-
+    uchar ucLen;
+    
     // find the first significant figures.
     for ( ulDiv = ulMaxDiv; 1 < ulDiv; ulDiv /= 10 ){
         if ( ulSrc / ulDiv ){
@@ -155,60 +156,87 @@ static void putx( ulong ulSrc, ulong ulMaxDiv )
         }
     }
 
+    ucLen = 0;
     // output from the first significant figures.
     for ( ; ulDiv; ulDiv /= 10 ){
         myputc( ulSrc / ulDiv % 10 + 0x30 );
+        ucLen++;
     }
+    
+    return ucLen;
 }
 
-void putuc( uchar ucSrc )
+
+uchar putuc( uchar ucSrc )
 {
-    putx( (ulong)ucSrc, 100 );
+    return putx( (ulong)ucSrc, 100 );
 }
 
-void putsc( schar scSrc )
+
+uchar putsc( schar scSrc )
 {
     if ( 0 == scSrc ){
         pgmputs( "0" );
+        return 1;
     } else if ( 0 < scSrc ){
-        putuc( (uchar)scSrc );
+        return putuc( (uchar)scSrc );
     } else {
         pgmputs( "-" );
-        putuc( (uchar)(-scSrc) );
+        return putuc( (uchar)(-scSrc) ) + 1;
     }
 }
 
-void putun( uint unSrc )
+
+uchar putunAppendSpace( uint unSrc, uchar ucAllLen )
 {
-    putx( (ulong)unSrc, 10000 );
+    uchar ucPrintedLen;
+    
+    ucPrintedLen = putun( unSrc );
+    
+    for ( ; ucPrintedLen < ucAllLen; ucPrintedLen++ ){
+        putch( ' ' );
+    }
+    
+    return ucPrintedLen;
 }
 
-void putsn( sint snSrc )
+
+uchar putun( uint unSrc )
+{
+    return putx( (ulong)unSrc, 10000 );
+}
+
+
+uchar putsn( sint snSrc )
 {
     if ( 0 == snSrc ){
         pgmputs( "0" );
+        return 1;
     } else if ( 0 < snSrc ){
-        putun( (uint)snSrc );
+        return putun( (uint)snSrc );
     } else {
         pgmputs( "-" );
-        putun( (uint)(-snSrc) );
+        return putun( (uint)(-snSrc) ) + 1;
     }
 }
 
-void putul( ulong ulSrc )
+
+uchar putul( ulong ulSrc )
 {
-    putx( (ulong)ulSrc, 1000000000UL );
+    return putx( (ulong)ulSrc, 1000000000UL );
 }
 
-void putsl( slong slSrc )
+
+uchar putsl( slong slSrc )
 {
     if ( 0 == slSrc ){
         pgmputs( "0" );
+        return 1;
     } else if ( 0 < slSrc ){
-        putul( (ulong)slSrc );
+        return putul( (ulong)slSrc );
     } else {
         pgmputs( "-" );
-        putul( (ulong)(-slSrc) );
+        return putul( (ulong)(-slSrc) ) + 1;
     }
 
 }
@@ -223,6 +251,7 @@ void putf( float fSrc )
         myputf( fSrc );
     }
 }
+
 
 // the input float number should be low than 9.99999E9
 static void myputf( float f )
@@ -287,6 +316,7 @@ static void myputf( float f )
         myputc( szBuff[ucBuffIdx] );
     }
 }
+
 
 inline bool myIsDigit( const char* str, int nLen )
 {

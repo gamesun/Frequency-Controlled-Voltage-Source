@@ -35,17 +35,18 @@ extern void UartInit( void );
 extern void putstr_p( const char* );
 extern void putstr( char* );
 extern void putch( char );
-extern void putuc( uchar );
-extern void putsc( schar );
-extern void putun( uint );
-extern void putsn( sint );
-extern void putul( ulong );
-extern void putsl( slong );
+extern uchar putuc( uchar );
+extern uchar putsc( schar );
+extern uchar putun( uint );
+extern uchar putsn( sint );
+extern uchar putul( ulong );
+extern uchar putsl( slong );
 extern void putf( float );
 
-extern uint g_dbgLCD;
+uchar putunAppendSpace( uint unSrc, uchar ucAllLen );
+
 
 extern uchar ucCmdBuff[RECV_BUF_SIZE];
-extern volatile bool bIsCmdExist;
+extern bool bIsCmdExist;
 
 #endif /* __UART_H__ */
