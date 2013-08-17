@@ -50,7 +50,10 @@ static void InitDevices( void )
 
 static void SayWelcome( void )
 {
-    pgmputs( "\nWelcome to Frequency-Controlled-Voltage-Source.\n\n" );
+    pgmputs( "\nWelcome to Frequency-Controlled Voltage Source.\n" );
+    pgmputs( "HomePage: https://github.com/gamesun/Frequency-Controlled-Voltage-Source\n" );
+    pgmputs( "Copywrong All Lefts Unreserved.\n\n" );
     pgmputs( "If you want a list of all supported commands type 'help'.\n" );
+
     pgmputs( ">" );
 }
