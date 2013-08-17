@@ -38,7 +38,7 @@ static void CmdMatchAndExecute( PST_CMD );
 static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd );
 static void dbgPutCmd( PST_CMD pstCmd );
 static void CmdHelp( PST_CMD );
-static void CmdStart( PST_CMD );
+static void CmdList( PST_CMD );
 static void CmdSetCnt( PST_CMD );
 static void CmdSetTime( PST_CMD );
 static void CmdSetVol( PST_CMD );
@@ -47,7 +47,7 @@ static void CmdVolt( PST_CMD );
 static ST_CMD_MATRIX stCmdMatrix[] = {
     
     { "help",       CmdHelp         },
-    { "start",      CmdStart        },
+    { "list",       CmdList         },
     { "setcnt",     CmdSetCnt       },
     { "settime",    CmdSetTime      },
     { "setvol",     CmdSetVol       },
@@ -185,23 +185,19 @@ static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
 
 static void CmdHelp( PST_CMD pstCmd )
 {
-
-pgmputs( "\
-  help       display this message.\n\
-  start      start working.\n\
-  setcnt     set the counter values.\n\
-  settime    set the time values.\n\
-  setvol     set the voltage.\n\
-  volt       directly set the voltage.\n\
-"
-);
-
+    pgmputs( "  help       display this message.\n" );
+    pgmputs( "  list       list all the parameters.\n" );
+    pgmputs( "  setcnt     set counters' values of each stage.\n" );
+    pgmputs( "  setvol     set voltages of each stage.\n" );
+    pgmputs( "  volt       set the DAC output voltage directly.\n" );
+    pgmputs( "\n" );
+    pgmputs( "Type a command will display it's usage." );
 }
 
 
-static void CmdStart( PST_CMD pstCmd )
+static void CmdList( PST_CMD pstCmd )
 {
-    CounterStart();
+    
 }
 
 
@@ -211,9 +207,9 @@ static void CmdSetCnt( PST_CMD pstCmd )
     
     if ( 2 != pstCmd->ucArgsCnt ){
         pgmputs( "bad arguments.\n\n" );
-        pgmputs( "usage: setcnt c n\n" );
-        pgmputs( "  c -> from 2 to 5.\n" );
-        pgmputs( "  n -> from 1 to 65535.\n" );
+        pgmputs( "usage: setcnt i c\n" );
+        pgmputs( "  i -> Index of one count, from 2 to 5.\n" );
+        pgmputs( "  c -> value of the Count, from 1 to 65535.\n" );
     }
     
     CounterSetCnt( (uchar)pstCmd->unArgs[0], pstCmd->unArgs[1] );
@@ -228,7 +224,28 @@ static void CmdSetTime( PST_CMD pstCmd )
 
 static void CmdSetVol( PST_CMD pstCmd )
 {
-
+    uint unTmp;
+    
+    if ( ( 2 == pstCmd->ucArgsCnt ) && 
+            ( 1 <= pstCmd->unArgs[0] ) &&
+            ( pstCmd->unArgs[0] <= 6 ) ){
+        SetVTable( pstCmd->unArgs[0], pstCmd->unArgs[1] );
+        unTmp = GetVTable( pstCmd->unArgs[0] );
+        
+        pgmputs( "you have set V" );
+        putuc( pstCmd->unArgs[0] );
+        pgmputs( " = " );
+        putun( unTmp );
+        pgmputs( "\n" );
+        pgmputs( "The Real Voltage will be " );
+        putf( CnvToRealVoltage( unTmp ) );
+        pgmputs( "\n" );
+    } else {
+        pgmputs( "bad arguments.\n\n" );
+        pgmputs( "usage: setvol i v\n" );
+        pgmputs( "  i -> Index of one voltage, from 1 to 6.\n" );
+        pgmputs( "  v -> the Voltage, from 0 to 500 (500 means 5.00V).\n" );
+    }
 }
 
 
