@@ -4,6 +4,7 @@
 *******************************************************************/
 
 #include "common.h"
+#include "setting.h"
 #include "dac.h"
 #include "spi.h"
 
@@ -11,28 +12,29 @@
 #define DAC_V_REF           250     // 2.50V
 #define DAC_V_MAX           (DAC_V_REF * 1023ul / 512ul)
 
+#define VTABLE_LEN          STAGE_NUM
 
-static uint unVTable[6] = { 0 };
+static uint unVTable[VTABLE_LEN] = { 0 };
 
 static void SetDacCode( uint unDacCode );
 static uint CnvDacCode( uint unVol100times );
 
 
-// ucIndex: 1 - 6
+// ucIndex: 1 - VTABLE_LEN
 void SetVoltageByVTable( uchar ucIndex )
 {
     SetVoltageByValue( unVTable[ucIndex - 1] );
 }
 
 
-// ucIndex: 1 - 6
+// ucIndex: 1 - VTABLE_LEN
 void SetVTable( uchar ucIndex, uint unVol100times )
 {
     unVTable[ucIndex - 1] = unVol100times;
 }
 
 
-// ucIndex: 1 - 6
+// ucIndex: 1 - VTABLE_LEN
 uint GetVTable( uchar ucIndex )
 {
     return unVTable[ucIndex - 1];

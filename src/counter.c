@@ -4,17 +4,18 @@
 *******************************************************************/
 
 #include "common.h"
+#include "setting.h"
 #include "counter.h"
 #include "uart.h"
 
-#define CNT_NUM        10
+#define CTABLE_LEN          STAGE_NUM
+#define STATE_MAX           CTABLE_LEN - 1
 
 static uchar ucOvfCntRemain = 0;
 static uchar ucLastCnt = 0;
 
 static uchar ucCntState = 0;
-static uchar ucCntStateMax = 0;
-static uint unCnt[CNT_NUM] = { 0 };
+static uint unCTable[CTABLE_LEN] = { 0 };
 
 static void Tc0Init( void );
 static void Tc0Start( void );
@@ -50,17 +51,16 @@ void CounterStart( void )
     bool bIsCntValid;
     
     ucCntState = 0;
-    ucCntStateMax = 5;      // 0 ~ 5: 6 times
     bIsCntValid =TRUE;
     
-    for ( i = ucCntState; i < ucCntStateMax; i++ ){
-        if ( 0 == unCnt[i] ){
+    for ( i = ucCntState; i < CTABLE_LEN; i++ ){
+        if ( 0 == unCTable[i] ){
             bIsCntValid = FALSE;
         }
     }
     
     if ( TRUE == bIsCntValid ){
-        SetTc0Top( unCnt[ucCntState] );
+        SetTc0Top( unCTable[ucCntState] );
         Tc0Start();
     } else {
         pgmputs( "I won't start.\n" );
@@ -98,13 +98,11 @@ static void SetTc0Top( uint unCntTop )
     }
 }
 
-void CounterSetCnt( uchar ucIndex, uint unData )
+void SetCTable( uchar ucIndex, uint unData )
 {
-    if ( CNT_NUM <= ucIndex ){
-        return;
+    if ( ucIndex < CTABLE_LEN ){
+        unCTable[ucIndex - 1] = unData;
     }
-    
-    unCnt[ucIndex] = unData;
 }
 
 
@@ -118,8 +116,8 @@ ISR( TIMER0_COMP_vect )
         OCR0 = ucLastCnt;
     } else {
         // this state is complete.
-        if ( ucCntState < ucCntStateMax ){
-            SetTc0Top( unCnt[++ucCntState] );
+        if ( ucCntState < STATE_MAX ){
+            SetTc0Top( unCTable[++ucCntState] );
         } else {
             Tc0Stop();
         }

@@ -191,7 +191,7 @@ static void CmdHelp( PST_CMD pstCmd )
     pgmputs( "  setvol     set voltages of each stage.\n" );
     pgmputs( "  volt       set the DAC output voltage directly.\n" );
     pgmputs( "\n" );
-    pgmputs( "Type a command will display it's usage." );
+    pgmputs( "Type a command will display it's usage.\n" );
 }
 
 
@@ -212,7 +212,7 @@ static void CmdSetCnt( PST_CMD pstCmd )
         pgmputs( "  c -> value of the Count, from 1 to 65535.\n" );
     }
     
-    CounterSetCnt( (uchar)pstCmd->unArgs[0], pstCmd->unArgs[1] );
+    SetCTable( (uchar)pstCmd->unArgs[0], pstCmd->unArgs[1] );
 }
 
 
