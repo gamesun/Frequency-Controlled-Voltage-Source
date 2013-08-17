@@ -37,15 +37,15 @@ void UartHandle( void )
         UCSRB &= ~_BV( RXCIE );       // RX INT Off
         
         if ( ( 1 == st_ucRxBuffIdx ) && 
-        		( chLF == st_ucRxBuff[0] ) && ( chCR == st_ucRxCharPrevious ) ){
-        	;			// the second char 'LF' of 'CR+LF'.
+                ( chLF == st_ucRxBuff[0] ) && ( chCR == st_ucRxCharPrevious ) ){
+            ;           // the second char 'LF' of 'CR+LF'.
         } else if ( ( ( 1 == st_ucRxBuffIdx ) && 
                 ( ( chCR == st_ucRxBuff[0] ) ||     // CR
                 ( chLF == st_ucRxBuff[0] ) ) ) ||   // LF
             ( ( 2 == st_ucRxBuffIdx ) && 
                 ( chCR == st_ucRxBuff[0] ) &&       // CR+LF
                 ( chLF == st_ucRxBuff[1] ) ) ){
-        	pgmputs( "\n>" );           // input is only a CR(or LF or CR+LF).
+            pgmputs( "\n>" );           // input is only a CR(or LF or CR+LF).
         } else {
             ucLen = MIN( st_ucRxBuffIdx, RECV_BUF_SIZE );
             for ( i = 0; i < ucLen && chCR != st_ucRxBuff[i] && chLF != st_ucRxBuff[i]; i++ ){
@@ -85,7 +85,7 @@ ISR( USART_RXC_vect )
                 myputc( ucRxBuff );
             }
         } else {
-        	st_bRxCmdEnd = TRUE;
+            st_bRxCmdEnd = TRUE;
         }
     }
 }
@@ -140,7 +140,7 @@ void putstr_p( const char *pStr )
 
 void putch( char c )
 {
-	myputc( c );
+    myputc( c );
 }
 
 static void putx( ulong ulSrc, ulong ulMaxDiv )
