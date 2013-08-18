@@ -10,6 +10,7 @@
 #ifndef __DAC_H__
 #define __DAC_H__
 
+extern void DacInit( void );
 extern void SetVoltageByVTable( uchar ucIndex );
 extern void SetVTable( uchar ucIndex, uint unVol1000times );
 extern uint GetVTable( uchar ucIndex );

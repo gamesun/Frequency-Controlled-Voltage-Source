@@ -23,6 +23,11 @@ static void SetDacCode( uint unDacCode );
 static uint CnvDacCode( uint unVol1000times );
 
 
+void DacInit( void )
+{
+    SetVoltageByValue( 0 );
+}
+
 // ucIndex: 1 - VTABLE_LEN
 void SetVoltageByVTable( uchar ucIndex )
 {

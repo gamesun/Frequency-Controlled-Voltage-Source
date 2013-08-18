@@ -40,13 +40,18 @@ static void InitDevices( void )
     _delay_ms( 10 );
 
     MCUCR = 0x00;                           // sleep mode off
+    // hardware initial
     PortInit();
     CounterInit();
     SpiInit();
     UartInit();
 
-
     sei();
+    
+    // application initial
+    DacInit();
+    
+    
 }
 
 
