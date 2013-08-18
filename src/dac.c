@@ -24,7 +24,7 @@ static uint CnvDacCode( uint unVol1000times );
 // ucIndex: 1 - VTABLE_LEN
 void SetVoltageByVTable( uchar ucIndex )
 {
-    if ( ucIndex < VTABLE_LEN ){
+    if ( ucIndex <= VTABLE_LEN ){
         SetVoltageByValue( unVTable[ucIndex - 1] );
     }
 }
@@ -33,8 +33,8 @@ void SetVoltageByVTable( uchar ucIndex )
 // ucIndex: 1 - VTABLE_LEN
 void SetVTable( uchar ucIndex, uint unVol1000times )
 {
-    if ( ucIndex < VTABLE_LEN ){
-        unVTable[ucIndex - 1] = unVol1000times;
+    if ( ucIndex <= VTABLE_LEN ){
+        unVTable[ucIndex - 1] = MIN( unVol1000times, DAC_V_MAX );
     }
 }
 
@@ -53,7 +53,7 @@ uint GetVTable( uchar ucIndex )
 
 double CnvToRealVoltage( uint unVol1000times )
 {
-    return ( CnvDacCode( unVol1000times ) * (double)DAC_V_REF / 512.0f );
+    return ( CnvDacCode( MIN(unVol1000times, DAC_V_MAX) ) * (double)DAC_V_REF / 512.0f );
 }
 
 
@@ -63,10 +63,6 @@ double CnvToRealVoltage( uint unVol1000times )
 */
 void SetVoltageByValue( uint unVol1000times )
 {
-    if ( DAC_V_MAX < unVol1000times ){
-        unVol1000times = DAC_V_MAX;
-    }
-    
     SetDacCode( CnvDacCode( unVol1000times ) );
 }
 

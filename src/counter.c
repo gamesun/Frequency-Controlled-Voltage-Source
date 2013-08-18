@@ -100,7 +100,7 @@ static void SetTc0Top( uint unCntTop )
 
 void SetCTable( uchar ucIndex, uint unData )
 {
-    if ( ucIndex < CTABLE_LEN ){
+    if ( ucIndex <= CTABLE_LEN ){
         unCTable[ucIndex - 1] = unData;
     }
 }
