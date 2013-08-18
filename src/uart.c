@@ -267,7 +267,7 @@ uchar putfAppendSpace( float fSrc, uchar ucAllLen )
 }
 
 
-// the input float number should be low than 9.99999E9
+// the input float number should be smaller than 9.99999E9
 static uchar myputf( float f )
 {
     float fSrc;
@@ -287,6 +287,7 @@ static uchar myputf( float f )
     szLastNotZero = 0;
     ucPrintedLen  = 0;
     
+    // Integer Number
     for ( nIntDiv = 1000000000L; nIntDiv; nIntDiv /= 10 ){
         if ( (long)fSrc / nIntDiv ){
             break;
@@ -294,7 +295,7 @@ static uchar myputf( float f )
     }
     
     do{
-        myputc( (long)fSrc / nIntDiv % 10 + 0x30 );
+        myputc( (long)fSrc / nIntDiv % 10 + '0' );
         ucPrintedLen++;
         nIntDiv /= 10;
         szIntCnt++;
@@ -302,11 +303,8 @@ static uchar myputf( float f )
     
     szCntTmp = 7 - szIntCnt;
     
-    
-    
-    if ( szIntCnt ){
-        
-    } else {
+    // Decimal Number
+    if ( 0 == szIntCnt ){
         myputc( '0' );
         ucPrintedLen++;
         
@@ -319,7 +317,7 @@ static uchar myputf( float f )
     
     do {
         fSrc *= 10;
-        szBuff[ucBuffIdx] = (long)fSrc % 10 + 0x30;
+        szBuff[ucBuffIdx] = (long)fSrc % 10 + '0';
         szDecCnt++;
         if ( '0' != szBuff[ucBuffIdx] ){
             szLastNotZero = szDecCnt;
