@@ -13,6 +13,9 @@
 #define PORT_EN         PORTA
 #define PORT_EN_BIT     _BV(0)
 
+#define PORT_CLK        PORTB
+#define PORT_CLK_BIT    _BV(0)
+
 typedef enum {
     NONE_EDGE = 0,
     FALLING_EDGE,
@@ -21,7 +24,7 @@ typedef enum {
 
 
 static PIN_EDGE signal_EN;
-
+static PIN_EDGE signal_CLK;
 
 static void PortPolling( void );
 static void PortTrigger( void );
@@ -44,27 +47,53 @@ static void PortTrigger( void )
         signal_EN = NONE_EDGE;
         SetVoltageByValue( 0 );     // 0.00V
     }
+    
+    if ( signal_CLK == FALLING_EDGE ){
+        signal_CLK = NONE_EDGE;
+
+    } else if ( signal_CLK == RISING_EDGE ){
+        signal_CLK = NONE_EDGE;
+
+    }
 }
 
 
 static void PortPolling( void )
 {
-    static uchar ucPreviousPortState = 0;
-    uchar ucCurrentPortState;
-    uchar ucDiffPort;
+    static uchar ucPreviousPortState0 = 0;
+    uchar ucCurrentPortState0;
+    uchar ucDiffPort0;
     
-    ucCurrentPortState = PORT_EN;
+    static uchar ucPreviousPortState1 = 0;
+    uchar ucCurrentPortState1;
+    uchar ucDiffPort1;
     
-    ucDiffPort = ucPreviousPortState ^ ucCurrentPortState; 
-    if ( 0 != ucDiffPort ){
-        if ( 0 != ( ucDiffPort & PORT_EN_BIT ) ){
-            if ( 0 != ( ucPreviousPortState & PORT_EN_BIT ) ){
+    ucCurrentPortState0 = PORT_EN;
+    
+    ucDiffPort0 = ucPreviousPortState0 ^ ucCurrentPortState0; 
+    if ( 0 != ucDiffPort0 ){
+        if ( 0 != ( ucDiffPort0 & PORT_EN_BIT ) ){
+            if ( 0 != ( ucPreviousPortState0 & PORT_EN_BIT ) ){
                 signal_EN = FALLING_EDGE;
             } else {
                 signal_EN = RISING_EDGE;
             }
         }
-        ucPreviousPortState = ucCurrentPortState;
+        ucPreviousPortState0 = ucCurrentPortState0;
+    }
+    
+    ucCurrentPortState1 = PORT_CLK;
+    
+    ucDiffPort1 = ucPreviousPortState1 ^ ucCurrentPortState1; 
+    if ( 0 != ucDiffPort1 ){
+        if ( 0 != ( ucDiffPort1 & PORT_CLK_BIT ) ){
+            if ( 0 != ( ucPreviousPortState1 & PORT_CLK_BIT ) ){
+                signal_CLK = FALLING_EDGE;
+            } else {
+                signal_CLK = RISING_EDGE;
+            }
+        }
+        ucPreviousPortState1 = ucCurrentPortState1;
     }
 }
 
@@ -96,9 +125,9 @@ static void PortPolling( void )
 void PortInit( void )
 {
     DDRA  = 0b11111110;                     // PA0 Input, PA1..7 Output
-    DDRB  = 0b11111111;                     // PB0..7 Output
+    DDRB  = 0b11111110;                     // PB0 Input  PB1..7 Output
     DDRC  = 0b11111111;                     // PC0..7 Output
-    DDRD  = 0b10111110;                     // PD7,5,4,3,2 Output,,PD1-TxD,PD0-RxD
+    DDRD  = 0b10111110;                     // PD7,5,4,3,2 Output,PD1-TxD,PD0-RxD
 
     PORTA = 0b00000000;                     // PA Low
     PORTB = 0b00010000;                     // PB4 High
