@@ -9,6 +9,7 @@
 #include "port.h"
 #include "dac.h"
 #include "counter.h"
+#include "setting.h"
 
 #define PORT_EN         PORTA
 #define PORT_EN_BIT     _BV(0)
@@ -26,74 +27,86 @@ typedef enum {
 static PIN_EDGE signal_EN;
 static PIN_EDGE signal_CLK;
 
-static void PortPolling( void );
-static void PortTrigger( void );
-
+static void EnSignalPolling( void );
+static void ClkSignalPolling( void );
+static void EnSignalTrigger( void );
+static void ClkSignalTrigger( void );
 
 void PortHandle( void )
 {
-    PortPolling();
-    PortTrigger();
+    EnSignalPolling();
+    EnSignalTrigger();
+    
+    if ( GetStage() == STAGE_1 ){
+        ClkSignalPolling();
+        ClkSignalTrigger();
+    }
 }
 
 
-static void PortTrigger( void )
+static void EnSignalTrigger( void )
 {
     if ( signal_EN == FALLING_EDGE ){
         signal_EN = NONE_EDGE;
-        SetVoltageByVTable( 1 );    // V1
-        CounterStart();
+        CounterStart();             // -> STAGE_1
     } else if ( signal_EN == RISING_EDGE ){
         signal_EN = NONE_EDGE;
-        SetVoltageByValue( 0 );     // 0.00V
-    }
-    
-    if ( signal_CLK == FALLING_EDGE ){
-        signal_CLK = NONE_EDGE;
-
-    } else if ( signal_CLK == RISING_EDGE ){
-        signal_CLK = NONE_EDGE;
-
+        SetStageAndVolt( STAGE_NONE );
     }
 }
 
 
-static void PortPolling( void )
+static void ClkSignalTrigger( void )
 {
-    static uchar ucPreviousPortState0 = 0;
-    uchar ucCurrentPortState0;
-    uchar ucDiffPort0;
+    if ( signal_CLK == FALLING_EDGE ){
+        signal_CLK = NONE_EDGE;
+        SetStageAndVolt( STAGE_2 );
+    } else if ( signal_CLK == RISING_EDGE ){
+        signal_CLK = NONE_EDGE;
+    }
+}
+
+
+static void EnSignalPolling( void )
+{
+    static uchar ucPreviousPortState = 0;
+    uchar ucCurrentPortState;
+    uchar ucDiffPort;
     
-    static uchar ucPreviousPortState1 = 0;
-    uchar ucCurrentPortState1;
-    uchar ucDiffPort1;
+    ucCurrentPortState = PORT_EN;
     
-    ucCurrentPortState0 = PORT_EN;
-    
-    ucDiffPort0 = ucPreviousPortState0 ^ ucCurrentPortState0; 
-    if ( 0 != ucDiffPort0 ){
-        if ( 0 != ( ucDiffPort0 & PORT_EN_BIT ) ){
-            if ( 0 != ( ucPreviousPortState0 & PORT_EN_BIT ) ){
+    ucDiffPort = ucPreviousPortState ^ ucCurrentPortState; 
+    if ( 0 != ucDiffPort ){
+        if ( 0 != ( ucDiffPort & PORT_EN_BIT ) ){
+            if ( 0 != ( ucPreviousPortState & PORT_EN_BIT ) ){
                 signal_EN = FALLING_EDGE;
             } else {
                 signal_EN = RISING_EDGE;
             }
         }
-        ucPreviousPortState0 = ucCurrentPortState0;
+        ucPreviousPortState = ucCurrentPortState;
     }
+}
+
+
+static void ClkSignalPolling( void )
+{
+    static uchar ucPreviousPortState = 0;
+    uchar ucCurrentPortState;
+    uchar ucDiffPort;
     
-    ucCurrentPortState1 = PORT_CLK;
+    ucCurrentPortState = PORT_CLK;
     
-    ucDiffPort1 = ucPreviousPortState1 ^ ucCurrentPortState1; 
-    if ( 0 != ucDiffPort1 ){
-        if ( 0 != ( ucDiffPort1 & PORT_CLK_BIT ) ){
-            if ( 0 != ( ucPreviousPortState1 & PORT_CLK_BIT ) ){
+    ucDiffPort = ucPreviousPortState ^ ucCurrentPortState; 
+    if ( 0 != ucDiffPort ){
+        if ( 0 != ( ucDiffPort & PORT_CLK_BIT ) ){
+            if ( 0 != ( ucPreviousPortState & PORT_CLK_BIT ) ){
                 signal_CLK = FALLING_EDGE;
             } else {
                 signal_CLK = RISING_EDGE;
             }
         }
-        ucPreviousPortState1 = ucCurrentPortState1;
+        ucPreviousPortState = ucCurrentPortState;
     }
 }
 
