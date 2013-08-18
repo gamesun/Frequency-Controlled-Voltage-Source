@@ -55,19 +55,52 @@ static void Tc0Init( void )
 }
 
 
-void GetStage( void )
+uchar GetStage( void )
 {
+    return ucCntStage;
+}
+
+
+void SetStageAndVolt( uchar ucStage )
+{
+    ucCntStage = ucStage;
+    
+    switch ( ucCntStage ){ 
+    case STAGE_1:
+        SetVoltageByVTable( 1 );
+        break;
+    case STAGE_2:
+        SetVoltageByVTable( 2 );
+        break;
+    case STAGE_3:
+        SetVoltageByVTable( 3 );
+        break;
+    case STAGE_4:
+        SetVoltageByVTable( 4 );
+        break;
+    case STAGE_5:
+        SetVoltageByVTable( 5 );
+        break;
+    case STAGE_6:
+        SetVoltageByVTable( 6 );
+        break;
+    case STAGE_NONE:
+    default:
+        SetVoltageByValue( 0 );
+        break;
+    }
     
 }
+
 
 void CounterStart( void )
 {
     uchar i;
     bool bIsCntValid;
     
-    ucCntStage = 1;     // start from C2
+    SetStageAndVolt( STAGE_1 );
     
-    SetTc0Top( unCTable[ucCntStage] );
+    SetTc0Top( unCTable[STAGE_2] );
     Tc0Start();
 }
 
@@ -133,6 +166,7 @@ ISR( TIMER0_COMP_vect )
         // this stage is complete.
         if ( ucCntStage < STAGE_MAX ){
             SetTc0Top( unCTable[++ucCntStage] );
+            SetStageAndVolt( ucCntStage );
         } else {
             Tc0Stop();
         }
