@@ -23,7 +23,7 @@ bool bIsCmdExist;
 inline bool myIsDigit( const char* str, int nLen );
 static void myputc( char );
 static uchar putx( ulong, ulong );
-static void myputf( float );
+static uchar myputf( float );
 
 
 void UartHandle( void )
@@ -242,19 +242,33 @@ uchar putsl( slong slSrc )
 }
 
 
-void putf( float fSrc )
+uchar putf( float fSrc )
 {
     if ( fSrc < 0 ){
         pgmputs( "-" );
-        myputf( -fSrc );
+        return myputf( -fSrc ) + 1;
     } else {
-        myputf( fSrc );
+        return myputf( fSrc );
     }
 }
 
 
+uchar putfAppendSpace( float fSrc, uchar ucAllLen )
+{
+    uchar ucPrintedLen;
+    
+    ucPrintedLen = putf( fSrc );
+    
+    for ( ; ucPrintedLen < ucAllLen; ucPrintedLen++ ){
+        putch( ' ' );
+    }
+    
+    return ucPrintedLen;
+}
+
+
 // the input float number should be low than 9.99999E9
-static void myputf( float f )
+static uchar myputf( float f )
 {
     float fSrc;
     long nIntDiv;
@@ -264,12 +278,14 @@ static void myputf( float f )
     char szBuff[10] = {0};
     uchar ucBuffIdx;
     char szLastNotZero;
+    uchar ucPrintedLen;
     
     fSrc          = f;
     ucBuffIdx     = 0;
     szDecCnt      = 0;
     szIntCnt      = 0;
     szLastNotZero = 0;
+    ucPrintedLen  = 0;
     
     for ( nIntDiv = 1000000000L; nIntDiv; nIntDiv /= 10 ){
         if ( (long)fSrc / nIntDiv ){
@@ -279,6 +295,7 @@ static void myputf( float f )
     
     do{
         myputc( (long)fSrc / nIntDiv % 10 + 0x30 );
+        ucPrintedLen++;
         nIntDiv /= 10;
         szIntCnt++;
     } while ( nIntDiv );
@@ -291,10 +308,12 @@ static void myputf( float f )
         
     } else {
         myputc( '0' );
+        ucPrintedLen++;
         
         do {
             fSrc *= 10;
             myputc( (long)fSrc % 10 + '0' );
+            ucPrintedLen++;
         } while ( 0 != (long)fSrc % 10 );
     }
     
@@ -310,11 +329,15 @@ static void myputf( float f )
     
     if ( szLastNotZero ){
         myputc( '.' );
+        ucPrintedLen++;
     }
     
     for ( ucBuffIdx = 0; ucBuffIdx < szLastNotZero; ucBuffIdx++ ){
         myputc( szBuff[ucBuffIdx] );
+        ucPrintedLen++;
     }
+    
+    return ucPrintedLen;
 }
 
 
