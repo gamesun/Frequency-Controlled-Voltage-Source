@@ -34,6 +34,10 @@ typedef struct cmd_Matrix {
 } ST_CMD_MATRIX;
 
 
+extern uchar ucCmdBuff[RECV_BUF_SIZE];
+extern bool bIsCmdExist;
+
+
 static void CmdMatchAndExecute( PST_CMD );
 static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd );
 static bool IsInRange( uint unData, uint unMin, uint unMax );
@@ -126,7 +130,7 @@ static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
     bool bIsBlank;
     uchar ucCmdCnt;
     uchar ucBuffCnt;
-    char szBuff[ARG_LEN];
+    char szBuff[ARG_LEN + 1];   // add one to store the '\0'.
     
     ucCmdCnt = 0;
     ucBuffCnt = 0;
@@ -140,6 +144,7 @@ static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
                 bIsBlank = FALSE;
                 if ( 0 < ucArgsIdx ){
                     if ( ucArgsIdx - 1 < ARG_NUM ){
+                        szBuff[ucBuffCnt] = 0;
                         pstCmd->unArgs[ucArgsIdx - 1] = atoi( szBuff );
                         ucBuffCnt = 0;
                     } else {
@@ -171,6 +176,7 @@ static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
     // the last argument
     if ( 0 < ucArgsIdx ){
         if ( ucArgsIdx - 1 < ARG_NUM ){
+            szBuff[ucBuffCnt] = 0;
             pstCmd->unArgs[ucArgsIdx - 1] = atoi( szBuff );
             ucBuffCnt = 0;
         } else {
@@ -207,7 +213,7 @@ static void CmdHelp( PST_CMD pstCmd )
 
 static void CmdList( PST_CMD pstCmd )
 {
-    uchar i;
+//    uchar i;
     uint (*C)( uchar );
     uint (*V)( uchar );
 #   define ps   pgmputs
@@ -226,16 +232,14 @@ static void CmdList( PST_CMD pstCmd )
     C = GetCTable;
     V = GetVTable;
     
-//    for ( i = 0; i < TABLE_LEN; i++ ){
     ps( "|No.| Count | Voltage |\n" );
     ps( "+---+-------+---------+\n" );
-    ps( "| 1 | " );p6(C(1));ps("| ");p8(V(1));ps("|\n");
-    ps( "| 2 | " );p6(C(2));ps("| ");p8(V(2));ps("|\n");
-    ps( "| 3 | " );p6(C(3));ps("| ");p8(V(3));ps("|\n");
-    ps( "| 4 | " );p6(C(4));ps("| ");p8(V(4));ps("|\n");
-    ps( "| 5 | " );p6(C(5));ps("| ");p8(V(5));ps("|\n");
-    ps( "| 6 | " );p6(C(6));ps("| ");p8(V(6));ps("|\n");
-//    }
+    ps( "| 1 | " );ps("  -   ");ps("| ");p8( V( 1 ) );ps("|\n");
+    ps( "| 2 | " );p6( C( 2 ) );ps("| ");p8( V( 2 ) );ps("|\n");
+    ps( "| 3 | " );p6( C( 3 ) );ps("| ");p8( V( 3 ) );ps("|\n");
+    ps( "| 4 | " );p6( C( 4 ) );ps("| ");p8( V( 4 ) );ps("|\n");
+    ps( "| 5 | " );p6( C( 5 ) );ps("| ");p8( V( 5 ) );ps("|\n");
+    ps( "| 6 | " );ps("  -   ");ps("| ");p8( V( 6 ) );ps("|\n");
 }
 
 
