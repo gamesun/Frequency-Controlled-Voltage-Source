@@ -10,7 +10,7 @@
 #include "uart.h"
 
 #define DAC_V_MIN           0       // 0.00V
-#define DAC_V_REF           250     // 2.50V
+#define DAC_V_REF           2500    // 2.500V
 #define DAC_V_MAX           (DAC_V_REF * 1023ul / 512ul)
 
 #define VTABLE_LEN          STAGE_NUM
@@ -18,7 +18,7 @@
 static uint unVTable[VTABLE_LEN] = { 0 };
 
 static void SetDacCode( uint unDacCode );
-static uint CnvDacCode( uint unVol100times );
+static uint CnvDacCode( uint unVol1000times );
 
 
 // ucIndex: 1 - VTABLE_LEN
@@ -31,10 +31,10 @@ void SetVoltageByVTable( uchar ucIndex )
 
 
 // ucIndex: 1 - VTABLE_LEN
-void SetVTable( uchar ucIndex, uint unVol100times )
+void SetVTable( uchar ucIndex, uint unVol1000times )
 {
     if ( ucIndex < VTABLE_LEN ){
-        unVTable[ucIndex - 1] = unVol100times;
+        unVTable[ucIndex - 1] = unVol1000times;
     }
 }
 
@@ -51,9 +51,9 @@ uint GetVTable( uchar ucIndex )
 }
 
 
-double CnvToRealVoltage( uint unVol100times )
+double CnvToRealVoltage( uint unVol1000times )
 {
-    return ( CnvDacCode( unVol100times ) * (double)DAC_V_REF / 512.0f );
+    return ( CnvDacCode( unVol1000times ) * (double)DAC_V_REF / 512.0f );
 }
 
 
@@ -61,19 +61,19 @@ double CnvToRealVoltage( uint unVol100times )
  voltage range: from 1.00V to 2.00V step 0.01V.
  input parameter: 100 times voltage.
 */
-void SetVoltageByValue( uint unVol100times )
+void SetVoltageByValue( uint unVol1000times )
 {
-    if ( DAC_V_MAX < unVol100times ){
-        unVol100times = DAC_V_MAX;
+    if ( DAC_V_MAX < unVol1000times ){
+        unVol1000times = DAC_V_MAX;
     }
     
-    SetDacCode( CnvDacCode( unVol100times ) );
+    SetDacCode( CnvDacCode( unVol1000times ) );
 }
 
 
-static uint CnvDacCode( uint unVol100times )
+static uint CnvDacCode( uint unVol1000times )
 {
-    return (uint)( ( (double)unVol100times * 512.0f / (double)DAC_V_REF ) + 0.5f );
+    return (uint)( ( (double)unVol1000times * 512.0f / (double)DAC_V_REF ) + 0.5f );
 }
 
 

@@ -204,7 +204,7 @@ static void CmdHelp( PST_CMD pstCmd )
     pgmputs( "  help       display this message.\n" );
     pgmputs( "  list       list all the parameters.\n" );
     pgmputs( "  setcnt     set counters' values of each stage.\n" );
-    pgmputs( "  setvol     set voltages of each stage.\n" );
+    pgmputs( "  setvol     set voltages of each stage.(Unit:mV)\n" );
     pgmputs( "  volt       set the DAC output voltage directly.\n" );
     pgmputs( "\n" );
     pgmputs( "Type a command will display it's usage.\n" );
@@ -218,28 +218,34 @@ static void CmdList( PST_CMD pstCmd )
     uint (*V)( uchar );
 #   define ps   pgmputs
 #   define pc   putch
+#   define RV   CnvToRealVoltage
     
     void p6( uint unData )
     {
         putunAppendSpace( unData, 6 );
     }
     
-    void p8( uint unData )
+    void p9( uint unData )
     {
-        putunAppendSpace( unData, 8 );
+        putunAppendSpace( unData, 9 );
+    }
+    
+    void pRV( float fData )
+    {
+        putfAppendSpace( fData, 10 );
     }
     
     C = GetCTable;
     V = GetVTable;
     
-    ps( "|No.| Count | Voltage |\n" );
-    ps( "+---+-------+---------+\n" );
-    ps( "| 1 | " );ps("  -   ");ps("| ");p8( V( 1 ) );ps("|\n");
-    ps( "| 2 | " );p6( C( 2 ) );ps("| ");p8( V( 2 ) );ps("|\n");
-    ps( "| 3 | " );p6( C( 3 ) );ps("| ");p8( V( 3 ) );ps("|\n");
-    ps( "| 4 | " );p6( C( 4 ) );ps("| ");p8( V( 4 ) );ps("|\n");
-    ps( "| 5 | " );p6( C( 5 ) );ps("| ");p8( V( 5 ) );ps("|\n");
-    ps( "| 6 | " );ps("  -   ");ps("| ");p8( V( 6 ) );ps("|\n");
+    ps( "|No.| Count | Set Volt | Real Volt |\n" );
+    ps( "+---+-------+----------+-----------+\n" );
+    ps( "| 1 | " );ps("  -   ");ps("| ");p9( V( 1 ) );ps("| ");pRV( RV(V(1)) );ps("|\n");
+    ps( "| 2 | " );p6( C( 2 ) );ps("| ");p9( V( 2 ) );ps("| ");pRV( RV(V(2)) );ps("|\n");
+    ps( "| 3 | " );p6( C( 3 ) );ps("| ");p9( V( 3 ) );ps("| ");pRV( RV(V(3)) );ps("|\n");
+    ps( "| 4 | " );p6( C( 4 ) );ps("| ");p9( V( 4 ) );ps("| ");pRV( RV(V(4)) );ps("|\n");
+    ps( "| 5 | " );p6( C( 5 ) );ps("| ");p9( V( 5 ) );ps("| ");pRV( RV(V(5)) );ps("|\n");
+    ps( "| 6 | " );ps("  -   ");ps("| ");p9( V( 6 ) );ps("| ");pRV( RV(V(6)) );ps("|\n");
 }
 
 
@@ -279,15 +285,15 @@ static void CmdSetVol( PST_CMD pstCmd )
         putuc( pstCmd->unArgs[0] );
         pgmputs( " = " );
         putun( unTmp );
-        pgmputs( "0mV\n" );
+        pgmputs( "mV\n" );
         pgmputs( "The Real Voltage will be " );
-        putf( CnvToRealVoltage( unTmp ) * 10.0f );
+        putf( CnvToRealVoltage( unTmp ) );
         pgmputs( "mV\n" );
     } else {
         pgmputs( "bad arguments.\n\n" );
         pgmputs( "usage: setvol i v\n" );
         pgmputs( "  i -> Index of one voltage, from 1 to 6.\n" );
-        pgmputs( "  v -> the Voltage, from 0 to 500 (500 means 5.00V).\n" );
+        pgmputs( "  v -> the Voltage, from 0 to 5000 (mV).\n" );
     }
 }
 
@@ -299,14 +305,14 @@ static void CmdVolt( PST_CMD pstCmd )
         
         pgmputs( "you have set DAC to output " );
         putun( pstCmd->unArgs[0] );
-        pgmputs( "0mV\n" );
+        pgmputs( "mV\n" );
         pgmputs( "The Real output will be " );
-        putf( CnvToRealVoltage( pstCmd->unArgs[0] ) * 10 );
+        putf( CnvToRealVoltage( pstCmd->unArgs[0] ) );
         pgmputs( "mV\n" );
     } else {
         pgmputs( "bad arguments.\n\n" );
         pgmputs( "usage: volt v\n" );
-        pgmputs( "  v -> from 0 to 500 (500 means 5.00V).\n" );
+        pgmputs( "  v -> from 0 to 5000 (mV).\n" );
     }
 }
 

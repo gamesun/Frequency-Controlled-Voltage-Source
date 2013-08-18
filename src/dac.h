@@ -9,9 +9,9 @@
 #define __DAC_H__
 
 extern void SetVoltageByVTable( uchar ucIndex );
-extern void SetVTable( uchar ucIndex, uint unVol100times );
+extern void SetVTable( uchar ucIndex, uint unVol1000times );
 extern uint GetVTable( uchar ucIndex );
-extern void SetVoltageByValue( uint unVol100times );
-extern double CnvToRealVoltage( uint unVol100times );
+extern void SetVoltageByValue( uint unVol1000times );
+extern double CnvToRealVoltage( uint unVol1000times );
 
 #endif /* __DAC_H__ */
