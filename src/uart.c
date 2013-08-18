@@ -288,7 +288,7 @@ static uchar myputf( float f )
     ucPrintedLen  = 0;
     
     // Integer Number
-    for ( nIntDiv = 1000000000L; nIntDiv; nIntDiv /= 10 ){
+    for ( nIntDiv = 1000000000L; 1 < nIntDiv; nIntDiv /= 10 ){
         if ( (long)fSrc / nIntDiv ){
             break;
         }
