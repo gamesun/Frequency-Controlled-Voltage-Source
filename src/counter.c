@@ -11,14 +11,14 @@
 #include "uart.h"
 
 #define CTABLE_LEN          STAGE_NUM
-#define STATE_MAX           CTABLE_LEN - 1
+#define STAGE_MAX           CTABLE_LEN - 1
 
 #define CNT_VALUE_MIN       1
 
 static uchar ucOvfCntRemain = 0;
 static uchar ucLastCnt = 0;
 
-static uchar ucCntState = 0;
+static uchar ucCntStage = 0;
 static uint unCTable[CTABLE_LEN] = { 0 };
 
 static void Tc0Init( void );
@@ -55,14 +55,19 @@ static void Tc0Init( void )
 }
 
 
+void GetStage( void )
+{
+    
+}
+
 void CounterStart( void )
 {
     uchar i;
     bool bIsCntValid;
     
-    ucCntState = 1;     // start from C2
+    ucCntStage = 1;     // start from C2
     
-    SetTc0Top( unCTable[ucCntState] );
+    SetTc0Top( unCTable[ucCntStage] );
     Tc0Start();
 }
 
@@ -125,9 +130,9 @@ ISR( TIMER0_COMP_vect )
         ucOvfCntRemain--;
         OCR0 = ucLastCnt;
     } else {
-        // this state is complete.
-        if ( ucCntState < STATE_MAX ){
-            SetTc0Top( unCTable[++ucCntState] );
+        // this stage is complete.
+        if ( ucCntStage < STAGE_MAX ){
+            SetTc0Top( unCTable[++ucCntStage] );
         } else {
             Tc0Stop();
         }
