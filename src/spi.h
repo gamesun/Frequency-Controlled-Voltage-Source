@@ -1,6 +1,8 @@
 /*******************************************************************
- File  : spi.h
- Coder : gamesun
+ Frequency-Controlled Voltage Source
+ 
+ Author: gamesun <gamesun*outlook.com>
+ URL: https://github.com/gamesun/Frequency-Controlled-Voltage-Source
 *******************************************************************/
 
 #pragma once

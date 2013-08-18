@@ -1,6 +1,8 @@
 /*******************************************************************
- File  : main.c
- Coder : gamesun
+ Frequency-Controlled Voltage Source
+ 
+ Author: gamesun <gamesun*outlook.com>
+ URL: https://github.com/gamesun/Frequency-Controlled-Voltage-Source
 *******************************************************************/
 
 #include "common.h"
@@ -51,8 +53,8 @@ static void InitDevices( void )
 static void SayWelcome( void )
 {
     pgmputs( "\nWelcome to Frequency-Controlled Voltage Source.\n" );
-    pgmputs( "HomePage: https://github.com/gamesun/Frequency-Controlled-Voltage-Source\n" );
-    pgmputs( "Copywrong All Lefts Unreserved.\n\n" );
+    pgmputs( "         Copywrong All Lefts Unreserved.\n" );
+    pgmputs( "URL: https://github.com/gamesun/Frequency-Controlled-Voltage-Source\n\n" );
     pgmputs( "If you want a list of all supported commands type 'help'.\n" );
 
     pgmputs( ">" );
