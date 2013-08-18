@@ -13,6 +13,8 @@
 #define CTABLE_LEN          STAGE_NUM
 #define STATE_MAX           CTABLE_LEN - 1
 
+#define CNT_VALUE_MIN       1
+
 static uchar ucOvfCntRemain = 0;
 static uchar ucLastCnt = 0;
 
@@ -27,6 +29,12 @@ static void SetTc0Top( uint unCntTop );
 
 void CounterInit( void )
 {
+    uchar i;
+    
+    for ( i = 0; i < CTABLE_LEN; i++ ){
+        unCTable[i] = CNT_VALUE_MIN;
+    }
+    
     Tc0Init();
 }
 
@@ -52,22 +60,10 @@ void CounterStart( void )
     uchar i;
     bool bIsCntValid;
     
-    ucCntState = 0;
-    bIsCntValid =TRUE;
+    ucCntState = 1;     // start from C2
     
-    for ( i = ucCntState; i < CTABLE_LEN; i++ ){
-        if ( 0 == unCTable[i] ){
-            bIsCntValid = FALSE;
-        }
-    }
-    
-    if ( TRUE == bIsCntValid ){
-        SetTc0Top( unCTable[ucCntState] );
-        Tc0Start();
-    } else {
-        pgmputs( "I won't start.\n" );
-        pgmputs( "Make sure that each Ci in {C1...Cn} is not zero value.\n" );
-    }
+    SetTc0Top( unCTable[ucCntState] );
+    Tc0Start();
 }
 
 
@@ -100,10 +96,11 @@ static void SetTc0Top( uint unCntTop )
     }
 }
 
+
 void SetCTable( uchar ucIndex, uint unData )
 {
     if ( ucIndex <= CTABLE_LEN ){
-        unCTable[ucIndex - 1] = unData;
+        unCTable[ucIndex - 1] = MAX( unData, CNT_VALUE_MIN );
     }
 }
 
