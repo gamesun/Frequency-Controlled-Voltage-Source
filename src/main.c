@@ -12,6 +12,8 @@
 #include "spi.h"
 #include "cmd.h"
 #include "port.h"
+#include "eep.h"
+#include "dac.h"
 
 static void InitDevices( void );
 static void SayWelcome( void );
@@ -50,7 +52,7 @@ static void InitDevices( void )
     
     // application initial
     DacInit();
-    
+    EepReadAll();
     
 }
 
