@@ -9,6 +9,7 @@
 #include "setting.h"
 #include "counter.h"
 #include "uart.h"
+#include "dac.h"
 
 #define CTABLE_LEN          STAGE_NUM
 #define STAGE_MAX           CTABLE_LEN - 1
@@ -95,9 +96,6 @@ void SetStageAndVolt( uchar ucStage )
 
 void CounterStart( void )
 {
-    uchar i;
-    bool bIsCntValid;
-    
     SetStageAndVolt( STAGE_1 );
     
     SetTc0Top( unCTable[STAGE_2] );
