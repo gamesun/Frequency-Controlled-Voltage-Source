@@ -11,6 +11,7 @@
 #include "counter.h"
 #include "dac.h"
 #include "setting.h"
+#include "eep.h"
 
 #define CMD_LEN         10
 #define ARG_NUM         4
@@ -48,6 +49,7 @@ static void CmdHelp( PST_CMD );
 static void CmdList( PST_CMD );
 static void CmdSetCnt( PST_CMD );
 static void CmdSetVol( PST_CMD );
+static void CmdSave( PST_CMD );
 static void CmdVolt( PST_CMD );
 
 
@@ -57,6 +59,7 @@ static ST_CMD_MATRIX stCmdMatrix[] = {
     { "list",       CmdList         },
     { "setcnt",     CmdSetCnt       },
     { "setvol",     CmdSetVol       },
+    { "save",       CmdSave         },
     { "volt",       CmdVolt         },
     
     { "",           NULL            }  // Placing NULL at the end.
@@ -297,6 +300,33 @@ static void CmdSetVol( PST_CMD pstCmd )
         pgmputs( "  i -> Index of one voltage, from 1 to 6.\n" );
         pgmputs( "  v -> the Voltage, from 0 to 4995 (mV).\n" );
     }
+}
+
+
+static void CmdSave( PST_CMD pstCmd )
+{
+#   define C    GetCTable
+#   define V    GetVTable
+    
+    if ( 0 == pstCmd->ucArgsCnt ){
+        
+        EepWtWord( EEP_ADDR_VOL1, V(1) );
+        EepWtWord( EEP_ADDR_VOL2, V(2) );
+        EepWtWord( EEP_ADDR_VOL3, V(3) );
+        EepWtWord( EEP_ADDR_VOL4, V(4) );
+        EepWtWord( EEP_ADDR_VOL5, V(5) );
+        EepWtWord( EEP_ADDR_VOL6, V(6) );
+        
+        EepWtWord( EEP_ADDR_C2, C(2) );
+        EepWtWord( EEP_ADDR_C3, C(3) );
+        EepWtWord( EEP_ADDR_C4, C(4) );
+        EepWtWord( EEP_ADDR_C5, C(5) );
+        
+        pgmputs( "Saved to EEPROM" );
+    } else {
+        pgmputs( "'save' command need no argument." );
+    }
+    
 }
 
 
