@@ -10,7 +10,7 @@
 #ifndef SETTING_H_
 #define SETTING_H_
 
-#define STAGE_NONE          -1
+#define STAGE_NONE          255
 #define STAGE_1             0
 #define STAGE_2             1
 #define STAGE_3             2
