@@ -305,28 +305,12 @@ static void CmdSetVol( PST_CMD pstCmd )
 
 static void CmdSave( PST_CMD pstCmd )
 {
-#   define C    GetCTable
-#   define V    GetVTable
-    
     if ( 0 == pstCmd->ucArgsCnt ){
-        
-        EepWtWord( EEP_ADDR_VOL1, V(1) );
-        EepWtWord( EEP_ADDR_VOL2, V(2) );
-        EepWtWord( EEP_ADDR_VOL3, V(3) );
-        EepWtWord( EEP_ADDR_VOL4, V(4) );
-        EepWtWord( EEP_ADDR_VOL5, V(5) );
-        EepWtWord( EEP_ADDR_VOL6, V(6) );
-        
-        EepWtWord( EEP_ADDR_C2, C(2) );
-        EepWtWord( EEP_ADDR_C3, C(3) );
-        EepWtWord( EEP_ADDR_C4, C(4) );
-        EepWtWord( EEP_ADDR_C5, C(5) );
-        
+        EepWriteAll();
         pgmputs( "Saved to EEPROM" );
     } else {
         pgmputs( "'save' command need no argument." );
     }
-    
 }
 
 

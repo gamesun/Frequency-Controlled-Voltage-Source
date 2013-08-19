@@ -51,6 +51,7 @@ extern ulong EepRdDword( uint unStartAddress );
 extern double EepRdFloat( uint unStartAddress );
 extern void EepWtFloat( uint unStartAddress, double fData );
 
-
+extern void EepReadAll( void );
+extern void EepWriteAll( void );
 
 #endif /* __EEP_H__ */

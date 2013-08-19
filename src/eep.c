@@ -7,9 +7,44 @@
 
 #include "common.h"
 #include "eep.h"
+#include "dac.h"
+#include "counter.h"
 
 static uchar EepRd( uint unAddress );
 static void EepWt( uint unAddress, uchar ucData );
+
+
+void EepReadAll( void )
+{
+    SetVTable( 1, EepRdWord( EEP_ADDR_VOL1 ) );
+    SetVTable( 2, EepRdWord( EEP_ADDR_VOL2 ) );
+    SetVTable( 3, EepRdWord( EEP_ADDR_VOL3 ) );
+    SetVTable( 4, EepRdWord( EEP_ADDR_VOL4 ) );
+    SetVTable( 5, EepRdWord( EEP_ADDR_VOL5 ) );
+    SetVTable( 6, EepRdWord( EEP_ADDR_VOL6 ) );
+
+    SetCTable( 2, EepRdWord( EEP_ADDR_C2 ) );
+    SetCTable( 3, EepRdWord( EEP_ADDR_C3 ) );
+    SetCTable( 4, EepRdWord( EEP_ADDR_C4 ) );
+    SetCTable( 5, EepRdWord( EEP_ADDR_C5 ) );
+}
+
+
+void EepWriteAll( void )
+{
+    EepWtWord( EEP_ADDR_VOL1, GetVTable(1) );
+    EepWtWord( EEP_ADDR_VOL2, GetVTable(2) );
+    EepWtWord( EEP_ADDR_VOL3, GetVTable(3) );
+    EepWtWord( EEP_ADDR_VOL4, GetVTable(4) );
+    EepWtWord( EEP_ADDR_VOL5, GetVTable(5) );
+    EepWtWord( EEP_ADDR_VOL6, GetVTable(6) );
+    
+    EepWtWord( EEP_ADDR_C2, GetCTable(2) );
+    EepWtWord( EEP_ADDR_C3, GetCTable(3) );
+    EepWtWord( EEP_ADDR_C4, GetCTable(4) );
+    EepWtWord( EEP_ADDR_C5, GetCTable(5) );
+}
+
 
 void EepWtByte( uint unStartAddress, uchar ucData )
 {
