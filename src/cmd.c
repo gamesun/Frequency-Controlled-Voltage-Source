@@ -51,7 +51,8 @@ static void CmdSetCnt( PST_CMD );
 static void CmdSetVol( PST_CMD );
 static void CmdSave( PST_CMD );
 static void CmdVolt( PST_CMD );
-
+static void CmdVoltCode( PST_CMD );
+static void CmdDacAdjust( PST_CMD );
 
 static ST_CMD_MATRIX stCmdMatrix[] = {
     
@@ -61,6 +62,8 @@ static ST_CMD_MATRIX stCmdMatrix[] = {
     { "setvol",     CmdSetVol       },
     { "save",       CmdSave         },
     { "volt",       CmdVolt         },
+    { "voltcode",   CmdVoltCode     },
+    { "dacajt",     CmdDacAdjust    },
     
     { "",           NULL            }  // Placing NULL at the end.
 };
@@ -210,7 +213,9 @@ static void CmdHelp( PST_CMD pstCmd )
     pgmputs( "  list       list all the parameters.\n" );
     pgmputs( "  setcnt     set counters' values of each stage.\n" );
     pgmputs( "  setvol     set voltages of each stage.(Unit:mV)\n" );
-    pgmputs( "  volt       set the DAC output voltage directly.\n" );
+    pgmputs( "  volt       set the DAC output voltage directly by voltage value.\n" );
+    pgmputs( "  voltcode   set the DAC output voltage directly by DAC Code.\n" );
+    pgmputs( "  dacajt     Adjust the DAC's Coefficient-K & Coefficient-B.\n" );
     pgmputs( "\n" );
     pgmputs( "Type a command will display it's usage.\n" );
 }
@@ -329,6 +334,49 @@ static void CmdVolt( PST_CMD pstCmd )
         pgmputs( "bad arguments.\n\n" );
         pgmputs( "usage: volt v\n" );
         pgmputs( "  v -> from 0 to 4995 (mV).\n" );
+    }
+}
+
+
+static void CmdVoltCode( PST_CMD pstCmd )
+{
+    if ( ( 1 == pstCmd->ucArgsCnt ) &&
+        ( pstCmd->unArgs[0] <= DAC_CODE_MAX ) ){    
+        SetVoltageByValue( pstCmd->unArgs[0] );
+        
+        pgmputs( "you have set DAC's output by using Code = " );
+        putun( pstCmd->unArgs[0] );
+        pgmputs( "\n" );
+    } else {
+        pgmputs( "bad arguments.\n\n" );
+        pgmputs( "usage: voltcode d\n" );
+        pgmputs( "  d -> a 10-bits number in Decimal(from 0 to 1023).\n" );
+    }
+}
+
+static void CmdDacAdjust( PST_CMD pstCmd )
+{
+    if ( 2 == pstCmd->ucArgsCnt ){
+        DacAdjust( pstCmd->unArgs[0], pstCmd->unArgs[1] );
+        
+        pgmputs( "Adjustment Result:\n  Coef K = " );
+        putf( GetDacCoefK() );
+        pgmputs( "\n  Coef B = " );
+        putf( GetDacCoefB() );
+        pgmputs( "\n" );
+    } else {
+#       define p1   putun( (uint)DAC_AJT_CODE1 )
+#       define p2   putun( (uint)DAC_AJT_CODE2 )
+        
+        pgmputs( "" );
+        pgmputs( "bad arguments.\n\n" );
+        pgmputs( "usage: dacajt V" );p1;
+        pgmputs( " V" );p2;pgmputs( "\n" );
+        pgmputs( "  V" );p1;
+        pgmputs( " -> the real voltage measuring after \"voltcode " );p1;pgmputs( "\" using a voltmeter.\n" );
+        pgmputs( "  V" );p2;
+        pgmputs( " -> the real voltage measuring after \"voltcode " );p2;pgmputs( "\" using a voltmeter.\n" );
+        pgmputs( "(Unit: mV)\n" );
     }
 }
 
