@@ -342,7 +342,7 @@ static void CmdVoltCode( PST_CMD pstCmd )
 {
     if ( ( 1 == pstCmd->ucArgsCnt ) &&
         ( pstCmd->unArgs[0] <= DAC_CODE_MAX ) ){    
-        SetVoltageByValue( pstCmd->unArgs[0] );
+        SetVoltageByCode( pstCmd->unArgs[0] );
         
         pgmputs( "you have set DAC's output by using Code = " );
         putun( pstCmd->unArgs[0] );

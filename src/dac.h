@@ -30,5 +30,6 @@ extern double CnvToRealVoltage( uint unVol1000times );
 extern void DacAdjust( uint unY1, uint unY2 );
 extern double GetDacCoefK( void );
 extern double GetDacCoefB( void );
+extern void SetVoltageByCode( uint unCode );
 
 #endif /* __DAC_H__ */
