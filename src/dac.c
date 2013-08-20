@@ -13,11 +13,14 @@
 
 #define DAC_V_MIN           0       // 0.00V
 #define DAC_V_REF           2500    // 2.500V
-#define DAC_V_MAX           (DAC_V_REF * 1023ul / 512ul)
+#define DAC_V_MAX           (DAC_V_REF * DAC_CODE_MAX / 512ul)    // Full Scale Range
 
 #define VTABLE_LEN          STAGE_NUM
 
 static uint unVTable[VTABLE_LEN] = { 0 };
+static double fDacCoefK = 0.0f;     // Coefficient K
+static double fDacCoefB = 0.0f;     // Coefficient B
+
 
 static void SetDacCode( uint unDacCode );
 static uint CnvDacCode( uint unVol1000times );
@@ -74,6 +77,12 @@ void SetVoltageByValue( uint unVol1000times )
 }
 
 
+void SetVoltageByCode( uint unCode )
+{
+    SetDacCode( MIN(unCode, DAC_CODE_MAX) );
+}
+
+
 static uint CnvDacCode( uint unVol1000times )
 {
     return (uint)( ( (double)unVol1000times * 512.0f / (double)DAC_V_REF ) + 0.5f );
@@ -97,3 +106,32 @@ static void SetDacCode( uint unDacCode )
 }
 
 
+/*
+ * kx1 + b = y1
+ * kx2 + b = y2
+ * =>
+ *   k = (y2 - y1) / (x2 - x1)
+ *   b = (x2y1 - x1y2) / (x2 - x1)
+ */
+void DacAdjust( uint unY1, uint unY2 )
+{
+#   define y1   (double)unY1
+#   define y2   (double)unY2
+#   define x1   (double)DAC_AJT_CODE1
+#   define x2   (double)DAC_AJT_CODE2
+    
+    fDacCoefK = ( y2 - y1 ) / ( x2 - x1 );
+    fDacCoefB = (x2 * y1 - x1 * y2) / (x2 - x1);
+}
+
+
+double GetDacCoefK( void )
+{
+    return fDacCoefK;    
+}
+
+
+double GetDacCoefB( void )
+{
+    return fDacCoefB;
+}
