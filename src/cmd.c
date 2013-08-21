@@ -228,7 +228,7 @@ static void CmdList( PST_CMD pstCmd )
     uint (*V)( uchar );
 #   define ps   pgmputs
 #   define pc   putch
-#   define RV   CnvToRealVoltage
+#   define RV   IdealVoltToRealVolt
     
     void p6( uint unData )
     {
@@ -297,7 +297,7 @@ static void CmdSetVol( PST_CMD pstCmd )
         putun( unTmp );
         pgmputs( "mV\n" );
         pgmputs( "The Real Voltage will be " );
-        putf( CnvToRealVoltage( unTmp ) );
+        putf( IdealVoltToRealVolt( unTmp ) );
         pgmputs( "mV\n" );
     } else {
         pgmputs( "bad arguments.\n\n" );
@@ -328,8 +328,10 @@ static void CmdVolt( PST_CMD pstCmd )
         putun( pstCmd->unArgs[0] );
         pgmputs( "mV\n" );
         pgmputs( "The Real output will be " );
-        putf( CnvToRealVoltage( pstCmd->unArgs[0] ) );
-        pgmputs( "mV\n" );
+        putf( IdealVoltToRealVolt( pstCmd->unArgs[0] ) );
+        pgmputs( "mV by using Code = " );
+        putun( IdealVoltToDacCode( pstCmd->unArgs[0] ) );
+        pgmputs( "\n" );
     } else {
         pgmputs( "bad arguments.\n\n" );
         pgmputs( "usage: volt v\n" );
@@ -346,7 +348,9 @@ static void CmdVoltCode( PST_CMD pstCmd )
         
         pgmputs( "you have set DAC's output by using Code = " );
         putun( pstCmd->unArgs[0] );
-        pgmputs( "\n" );
+        pgmputs( "\nThe Real output will be " );
+        putf( DacCodeToRealVolt( pstCmd->unArgs[0] ) );
+        pgmputs( "mV\n" );
     } else {
         pgmputs( "bad arguments.\n\n" );
         pgmputs( "usage: voltcode d\n" );
@@ -376,7 +380,7 @@ static void CmdDacAdjust( PST_CMD pstCmd )
         pgmputs( " -> the real voltage measuring after \"voltcode " );p1;pgmputs( "\" using a voltmeter.\n" );
         pgmputs( "  V" );p2;
         pgmputs( " -> the real voltage measuring after \"voltcode " );p2;pgmputs( "\" using a voltmeter.\n" );
-        pgmputs( "(Unit: mV)\n" );
+        pgmputs( "  (Unit: mV)\n" );
     }
 }
 
