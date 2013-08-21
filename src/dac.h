@@ -10,7 +10,7 @@
 #ifndef __DAC_H__
 #define __DAC_H__
 
-#define DAC_CODE_MAX        1023u
+#define DAC_CODE_MAX        1023ul
 
 /*
  *  TLC5615 Offset Error is 3 LSB.
@@ -26,7 +26,9 @@ extern void SetVoltageByVTable( uchar ucIndex );
 extern void SetVTable( uchar ucIndex, uint unVol1000times );
 extern uint GetVTable( uchar ucIndex );
 extern void SetVoltageByValue( uint unVol1000times );
-extern double CnvToRealVoltage( uint unVol1000times );
+extern double IdealVoltToRealVolt( uint unVol1000times );
+extern double DacCodeToRealVolt( uint unCode );
+extern uint IdealVoltToDacCode( uint unVol1000times );
 extern void DacAdjust( uint unY1, uint unY2 );
 extern double GetDacCoefK( void );
 extern double GetDacCoefB( void );

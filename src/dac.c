@@ -12,7 +12,7 @@
 #include "uart.h"
 
 #define DAC_V_MIN           0       // 0.00V
-#define DAC_V_REF           2500    // 2.500V
+#define DAC_V_REF           2500ul  // 2.500V
 #define DAC_V_MAX           (DAC_V_REF * DAC_CODE_MAX / 512ul)    // Full Scale Range
 
 #define VTABLE_LEN          STAGE_NUM
@@ -23,7 +23,6 @@ static double fDacCoefB = 0.0f;     // Coefficient B
 
 
 static void SetDacCode( uint unDacCode );
-static uint CnvDacCode( uint unVol1000times );
 
 
 void DacInit( void )
@@ -61,9 +60,15 @@ uint GetVTable( uchar ucIndex )
 }
 
 
-double CnvToRealVoltage( uint unVol1000times )
+double IdealVoltToRealVolt( uint unVol1000times )
 {
-    return ( CnvDacCode( MIN(unVol1000times, DAC_V_MAX) ) * (double)DAC_V_REF / 512.0f );
+    return ( IdealVoltToDacCode( MIN(unVol1000times, DAC_V_MAX) ) * (double)DAC_V_REF / 512.0f );
+}
+
+
+double DacCodeToRealVolt( uint unCode )
+{
+    return ( MIN(unCode, DAC_CODE_MAX) * (double)DAC_V_REF / 512.0f );
 }
 
 
@@ -73,7 +78,7 @@ double CnvToRealVoltage( uint unVol1000times )
 */
 void SetVoltageByValue( uint unVol1000times )
 {
-    SetDacCode( CnvDacCode( unVol1000times ) );
+    SetDacCode( IdealVoltToDacCode( unVol1000times ) );
 }
 
 
@@ -83,9 +88,9 @@ void SetVoltageByCode( uint unCode )
 }
 
 
-static uint CnvDacCode( uint unVol1000times )
+uint IdealVoltToDacCode( uint unVol1000times )
 {
-    return (uint)( ( (double)unVol1000times * 512.0f / (double)DAC_V_REF ) + 0.5f );
+    return (uint)( ( (double)MIN(unVol1000times, DAC_V_MAX) * 512.0f / (double)DAC_V_REF ) + 0.5f );
 }
 
 
