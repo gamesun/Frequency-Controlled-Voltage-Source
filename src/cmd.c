@@ -213,6 +213,7 @@ static void CmdHelp( PST_CMD pstCmd )
     pgmputs( "  list       list all the parameters.\n" );
     pgmputs( "  setcnt     set counters' values of each stage.\n" );
     pgmputs( "  setvol     set voltages of each stage.(Unit:mV)\n" );
+    pgmputs( "  save       save the values which are set by 'setcnt', 'setvol'.\n" );
     pgmputs( "  volt       set the DAC output voltage directly by voltage value.\n" );
     pgmputs( "  voltcode   set the DAC output voltage directly by DAC Code.\n" );
     pgmputs( "  dacajt     Adjust the DAC's Coefficient-K & Coefficient-B.\n" );
