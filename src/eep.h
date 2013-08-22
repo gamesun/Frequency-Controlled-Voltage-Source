@@ -41,6 +41,9 @@
 #define EEP_ADDR_C5             (EEP_ADDR_C4 + EEP_C4_LEN)
 #define EEP_C5_LEN              2
 
+#define EEP_ADDR_T1             (EEP_ADDR_C5 + EEP_C5_LEN)
+#define EEP_T1_LEN              2
+
 
 extern void EepWtByte( uint unStartAddress, uchar ucData );
 extern uchar EepRdByte( uint unStartAddress );
