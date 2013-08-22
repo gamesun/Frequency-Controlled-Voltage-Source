@@ -10,7 +10,7 @@
 #include "counter.h"
 #include "uart.h"
 #include "dac.h"
-
+#include "parameter.h"
 
 static uchar ucOvfCntRemain = 0;
 static uchar ucLastCnt = 0;

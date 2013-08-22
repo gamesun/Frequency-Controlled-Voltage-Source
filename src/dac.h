@@ -10,6 +10,11 @@
 #ifndef __DAC_H__
 #define __DAC_H__
 
+#define DAC_V_MIN           0       // 0.00V
+#define DAC_V_REF           2500ul  // 2.500V
+#define DAC_V_MAX           (DAC_V_REF * DAC_CODE_MAX / 512ul)    // Full Scale Range
+
+
 #define DAC_CODE_MAX        1023ul
 
 /*
@@ -22,8 +27,6 @@
 
 
 extern void DacInit( void );
-extern void SetVTable( uchar ucIndex, uint unVol1000times );
-extern uint GetVTable( uchar ucIndex );
 extern void SetVoltageByValue( uint unVol1000times );
 extern double IdealVoltToRealVolt( uint unVol1000times );
 extern double DacCodeToRealVolt( uint unCode );

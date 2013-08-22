@@ -11,13 +11,7 @@
 #include "spi.h"
 #include "uart.h"
 
-#define DAC_V_MIN           0       // 0.00V
-#define DAC_V_REF           2500ul  // 2.500V
-#define DAC_V_MAX           (DAC_V_REF * DAC_CODE_MAX / 512ul)    // Full Scale Range
 
-#define VTABLE_LEN          STAGE_NUM
-
-static uint unVTable[VTABLE_LEN] = { 0 };
 static double fDacCoefK = 0.0f;     // Coefficient K
 static double fDacCoefB = 0.0f;     // Coefficient B
 
@@ -28,27 +22,6 @@ static void SetDacCode( uint unDacCode );
 void DacInit( void )
 {
     SetVoltageByValue( 0 );
-}
-
-
-// ucIndex: 1 - VTABLE_LEN
-void SetVTable( uchar ucIndex, uint unVol1000times )
-{
-    if ( ucIndex <= VTABLE_LEN ){
-        unVTable[ucIndex - 1] = MIN( unVol1000times, DAC_V_MAX );
-    }
-}
-
-
-// ucIndex: 1 - VTABLE_LEN
-uint GetVTable( uchar ucIndex )
-{
-    if ( VTABLE_LEN < ucIndex ){
-        pgmputs( "IllegalAccess at GetVTable() [dac.c]\n" );
-        return -1;
-    }
-    
-    return unVTable[ucIndex - 1];
 }
 
 

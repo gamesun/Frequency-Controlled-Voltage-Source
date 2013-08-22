@@ -14,5 +14,7 @@
 extern void SetCTable( uchar ucIndex, uint unData );
 extern uint GetCTable( uchar ucIndex );
 
+extern void SetVTable( uchar ucIndex, uint unVol1000times );
+extern uint GetVTable( uchar ucIndex );
 
 #endif /* __PARAMETER_H__ */
