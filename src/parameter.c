@@ -12,6 +12,7 @@
 
 #define CTABLE_LEN          STAGE_NUM
 #define VTABLE_LEN          STAGE_NUM
+#define TTABLE_LEN         1
 
 #define CNT_VALUE_MIN       1
 
@@ -19,6 +20,7 @@ static uint unCTable[CTABLE_LEN] = { 0 };
 
 static uint unVTable[VTABLE_LEN] = { 0 };
 
+static uint unTTable[TTABLE_LEN] = { 0 };
 
 void SetCTable( uchar ucIndex, uint unData )
 {
@@ -30,8 +32,8 @@ void SetCTable( uchar ucIndex, uint unData )
 
 uint GetCTable( uchar ucIndex )
 {
-    if ( CTABLE_LEN < ucIndex ){
-        pgmputs( "IllegalAccess at GetCTable() [counter.c]\n" );
+    if ( ( CTABLE_LEN < ucIndex ) || ( ucIndex < 1 ) ){
+        pgmputs( "IllegalAccess at GetCTable() [parameter.c]\n" );
         return -1;
     }
     
@@ -51,10 +53,29 @@ void SetVTable( uchar ucIndex, uint unVol1000times )
 // ucIndex: 1 - VTABLE_LEN
 uint GetVTable( uchar ucIndex )
 {
-    if ( VTABLE_LEN < ucIndex ){
-        pgmputs( "IllegalAccess at GetVTable() [dac.c]\n" );
+    if ( ( VTABLE_LEN < ucIndex ) || ( ucIndex < 1 ) ){
+        pgmputs( "IllegalAccess at GetVTable() [parameter.c]\n" );
         return -1;
     }
     
     return unVTable[ucIndex - 1];
+}
+
+
+void SetTTable( uchar ucIndex, uint unTime )
+{
+    if ( ucIndex <= TTABLE_LEN ){
+        unTTable[ucIndex - 1] = unTime;
+    }
+}
+
+
+uint GetTTable( uchar ucIndex )
+{
+    if ( ( TTABLE_LEN < ucIndex ) || ( ucIndex < 1 ) ){
+        pgmputs( "IllegalAccess at GetTTable() [parameter.c]\n" );
+        return -1;
+    }
+    
+    return unTTable[ucIndex - 1];
 }
