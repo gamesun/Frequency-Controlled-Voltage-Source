@@ -28,6 +28,8 @@ void EepReadAll( void )
     SetCTable( 3, EepRdWord( EEP_ADDR_C3 ) );
     SetCTable( 4, EepRdWord( EEP_ADDR_C4 ) );
     SetCTable( 5, EepRdWord( EEP_ADDR_C5 ) );
+    
+    SetTTable( 1, EepRdWord( EEP_ADDR_T1 ) );
 }
 
 
@@ -44,6 +46,8 @@ void EepWriteAll( void )
     EepWtWord( EEP_ADDR_C3, GetCTable(3) );
     EepWtWord( EEP_ADDR_C4, GetCTable(4) );
     EepWtWord( EEP_ADDR_C5, GetCTable(5) );
+    
+    EepWtWord( EEP_ADDR_T1, GetTTable(1) );
 }
 
 
