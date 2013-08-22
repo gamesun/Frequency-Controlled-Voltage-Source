@@ -50,7 +50,8 @@ static void EnSignalTrigger( void )
 {
     if ( signal_EN == FALLING_EDGE ){
         signal_EN = NONE_EDGE;
-        CounterStart();             // -> STAGE_1
+        CounterStart();
+        SetStageAndVolt( STAGE_1 );
         SetTimerByMillisecond( 30, Time1IsUp );
     } else if ( signal_EN == RISING_EDGE ){
         signal_EN = NONE_EDGE;
