@@ -12,6 +12,7 @@
 #include "dac.h"
 #include "setting.h"
 #include "eep.h"
+#include "parameter.h"
 
 #define CMD_LEN         10
 #define ARG_NUM         4

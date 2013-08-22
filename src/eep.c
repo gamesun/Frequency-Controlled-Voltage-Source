@@ -9,6 +9,7 @@
 #include "eep.h"
 #include "dac.h"
 #include "counter.h"
+#include "parameter.h"
 
 static uchar EepRd( uint unAddress );
 static void EepWt( uint unAddress, uchar ucData );
