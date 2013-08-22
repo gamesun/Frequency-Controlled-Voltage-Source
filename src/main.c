@@ -14,6 +14,7 @@
 #include "port.h"
 #include "eep.h"
 #include "dac.h"
+#include "timer.h"
 
 static void InitDevices( void );
 static void SayWelcome( void );
@@ -45,6 +46,7 @@ static void InitDevices( void )
     // hardware initial
     PortInit();
     CounterInit();
+    TimerInit();
     SpiInit();
     UartInit();
 
