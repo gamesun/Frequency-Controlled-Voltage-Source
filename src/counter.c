@@ -11,16 +11,12 @@
 #include "uart.h"
 #include "dac.h"
 
-#define CTABLE_LEN          STAGE_NUM
-#define STAGE_MAX           CTABLE_LEN - 1
-
-#define CNT_VALUE_MIN       1
 
 static uchar ucOvfCntRemain = 0;
 static uchar ucLastCnt = 0;
 
 static uchar ucCntStage = 0;
-static uint unCTable[CTABLE_LEN] = { 0 };
+
 
 static void Tc0Init( void );
 static void Tc0Start( void );
@@ -30,12 +26,6 @@ static void SetTc0Top( uint unCntTop );
 
 void CounterInit( void )
 {
-    uchar i;
-    
-    for ( i = 0; i < CTABLE_LEN; i++ ){
-        unCTable[i] = CNT_VALUE_MIN;
-    }
-    
     Tc0Init();
 }
 
@@ -96,9 +86,7 @@ void SetStageAndVolt( uchar ucStage )
 
 void CounterStart( void )
 {
-    SetStageAndVolt( STAGE_1 );
-    
-    SetTc0Top( unCTable[STAGE_2] );
+    SetTc0Top( GetCTable( 2 ) );
     Tc0Start();
 }
 
@@ -133,25 +121,6 @@ static void SetTc0Top( uint unCntTop )
 }
 
 
-void SetCTable( uchar ucIndex, uint unData )
-{
-    if ( ucIndex <= CTABLE_LEN ){
-        unCTable[ucIndex - 1] = MAX( unData, CNT_VALUE_MIN );
-    }
-}
-
-
-uint GetCTable( uchar ucIndex )
-{
-    if ( CTABLE_LEN < ucIndex ){
-        pgmputs( "IllegalAccess at GetCTable() [counter.c]\n" );
-        return -1;
-    }
-    
-    return unCTable[ucIndex - 1];
-}
-
-
 /*---------------------------------------------------- T/C0 Overflow Event --*/
 ISR( TIMER0_OVF_vect )
 {
@@ -162,11 +131,12 @@ ISR( TIMER0_OVF_vect )
         OCR0 = ucLastCnt;
     } else {
         // this stage is complete.
-        if ( ucCntStage < STAGE_MAX ){
-            SetTc0Top( unCTable[++ucCntStage] );
+        if ( ucCntStage <= STAGE_4 ){
+            SetTc0Top( GetCTable( ++ucCntStage ) );
             SetStageAndVolt( ucCntStage );
         } else {
             Tc0Stop();
+            SetStageAndVolt( STAGE_6 );
         }
     }
 }
