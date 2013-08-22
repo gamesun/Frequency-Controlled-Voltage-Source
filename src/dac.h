@@ -22,7 +22,6 @@
 
 
 extern void DacInit( void );
-extern void SetVoltageByVTable( uchar ucIndex );
 extern void SetVTable( uchar ucIndex, uint unVol1000times );
 extern uint GetVTable( uchar ucIndex );
 extern void SetVoltageByValue( uint unVol1000times );

@@ -30,14 +30,6 @@ void DacInit( void )
     SetVoltageByValue( 0 );
 }
 
-// ucIndex: 1 - VTABLE_LEN
-void SetVoltageByVTable( uchar ucIndex )
-{
-    if ( ucIndex <= VTABLE_LEN ){
-        SetVoltageByValue( unVTable[ucIndex - 1] );
-    }
-}
-
 
 // ucIndex: 1 - VTABLE_LEN
 void SetVTable( uchar ucIndex, uint unVol1000times )
