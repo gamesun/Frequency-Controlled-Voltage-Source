@@ -152,8 +152,8 @@ uint GetCTable( uchar ucIndex )
 }
 
 
-/*----------------------------------------------- T/C0 Compare Match Event --*/
-ISR( TIMER0_COMP_vect )
+/*---------------------------------------------------- T/C0 Overflow Event --*/
+ISR( TIMER0_OVF_vect )
 {
     if ( 1 < ucOvfCntRemain ){
         ucOvfCntRemain--;
