@@ -50,6 +50,7 @@ static void CmdHelp( PST_CMD );
 static void CmdList( PST_CMD );
 static void CmdSetCnt( PST_CMD );
 static void CmdSetVol( PST_CMD );
+static void CmdSetTime( PST_CMD );
 static void CmdSave( PST_CMD );
 static void CmdVolt( PST_CMD );
 static void CmdVoltCode( PST_CMD );
@@ -61,6 +62,7 @@ static ST_CMD_MATRIX stCmdMatrix[] = {
     { "list",       CmdList         },
     { "setcnt",     CmdSetCnt       },
     { "setvol",     CmdSetVol       },
+    { "settime",    CmdSetTime      },
     { "save",       CmdSave         },
     { "volt",       CmdVolt         },
     { "voltcode",   CmdVoltCode     },
@@ -214,6 +216,7 @@ static void CmdHelp( PST_CMD pstCmd )
     pgmputs( "  list       list all the parameters.\n" );
     pgmputs( "  setcnt     set counters' values of each stage.\n" );
     pgmputs( "  setvol     set voltages of each stage.(Unit:mV)\n" );
+    pgmputs( "  settime    set times of each stage.(Unit:ms)\n" );
     pgmputs( "  save       save the values which are set by 'setcnt', 'setvol'.\n" );
     pgmputs( "  volt       set the DAC output voltage directly by voltage value.\n" );
     pgmputs( "  voltcode   set the DAC output voltage directly by DAC Code.\n" );
@@ -226,8 +229,9 @@ static void CmdHelp( PST_CMD pstCmd )
 static void CmdList( PST_CMD pstCmd )
 {
 //    uchar i;
-    uint (*C)( uchar );
-    uint (*V)( uchar );
+#   define C    GetCTable
+#   define V    GetVTable
+#   define T    GetTTable
 #   define ps   pgmputs
 #   define pc   putch
 #   define RV   IdealVoltToRealVolt
@@ -247,17 +251,15 @@ static void CmdList( PST_CMD pstCmd )
         putfAppendSpace( fData, 10 );
     }
     
-    C = GetCTable;
-    V = GetVTable;
-    
-    ps( "|No.| Count | Set Volt | Real Volt |\n" );
-    ps( "+---+-------+----------+-----------+\n" );
-    ps( "| 1 | " );ps("  -   ");ps("| ");p9( V( 1 ) );ps("| ");pRV( RV(V(1)) );ps("|\n");
-    ps( "| 2 | " );p6( C( 2 ) );ps("| ");p9( V( 2 ) );ps("| ");pRV( RV(V(2)) );ps("|\n");
-    ps( "| 3 | " );p6( C( 3 ) );ps("| ");p9( V( 3 ) );ps("| ");pRV( RV(V(3)) );ps("|\n");
-    ps( "| 4 | " );p6( C( 4 ) );ps("| ");p9( V( 4 ) );ps("| ");pRV( RV(V(4)) );ps("|\n");
-    ps( "| 5 | " );p6( C( 5 ) );ps("| ");p9( V( 5 ) );ps("| ");pRV( RV(V(5)) );ps("|\n");
-    ps( "| 6 | " );ps("  -   ");ps("| ");p9( V( 6 ) );ps("| ");pRV( RV(V(6)) );ps("|\n");
+    ps( "|No.| Time  | Count | Set Volt | Real Volt |\n" );
+    ps( "|   | (ms)  |       |   (mV)   |    (mV)   |\n" );
+    ps( "+---+-------+-------+----------+-----------+\n" );
+    ps( "| 1 | " );p6( T( 1 ) );ps("|   -   | ");p9( V( 1 ) );ps("| ");pRV( RV(V(1)) );ps("|\n");
+    ps( "| 2 |   -   | " );p6( C( 2 ) );ps("| ");p9( V( 2 ) );ps("| ");pRV( RV(V(2)) );ps("|\n");
+    ps( "| 3 |   -   | " );p6( C( 3 ) );ps("| ");p9( V( 3 ) );ps("| ");pRV( RV(V(3)) );ps("|\n");
+    ps( "| 4 |   -   | " );p6( C( 4 ) );ps("| ");p9( V( 4 ) );ps("| ");pRV( RV(V(4)) );ps("|\n");
+    ps( "| 5 |   -   | " );p6( C( 5 ) );ps("| ");p9( V( 5 ) );ps("| ");pRV( RV(V(5)) );ps("|\n");
+    ps( "| 6 |   -   | " );ps("  -   ");ps("| ");p9( V( 6 ) );ps("| ");pRV( RV(V(6)) );ps("|\n");
 }
 
 
@@ -309,6 +311,29 @@ static void CmdSetVol( PST_CMD pstCmd )
     }
 }
 
+
+static void CmdSetTime( PST_CMD pstCmd )
+{
+    uint unTmp;
+    
+    if ( ( 2 == pstCmd->ucArgsCnt ) && 
+            IsInRange( pstCmd->unArgs[0], 1, 1 ) &&
+            IsInRange( pstCmd->unArgs[1], 1, 65535 ) ){
+        SetTTable( (uchar)pstCmd->unArgs[0], pstCmd->unArgs[1] );
+        unTmp = GetTTable( (uchar)pstCmd->unArgs[0] );
+        
+        pgmputs( "you have set T" );
+        putuc( pstCmd->unArgs[0] );
+        pgmputs( " = " );
+        putun( unTmp );
+        pgmputs( "ms\n" );
+    } else {
+        pgmputs( "bad arguments.\n\n" );
+        pgmputs( "usage: settime i t\n" );
+        pgmputs( "  i -> Index of one time, from 1 to 1 (-_-).\n" );
+        pgmputs( "  t -> the Time, from 1 to 65535 (ms).\n" );
+    }
+}
 
 static void CmdSave( PST_CMD pstCmd )
 {
