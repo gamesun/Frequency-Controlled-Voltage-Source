@@ -86,7 +86,7 @@ void CmdHandle( void )
             szBuff[i] = ucCmdBuff[i];
         }
         szBuff[i] = 0;
-        bIsCmdExist = FALSE;
+        bIsCmdExist = false;
 
         scResult = CmdCnvArgs( szBuff, &stCmd );
         
@@ -146,13 +146,13 @@ static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
     ucCmdCnt = 0;
     ucBuffCnt = 0;
     ucArgsIdx = 0;
-    bIsBlank = FALSE;
+    bIsBlank = false;
     for ( ; 0 != *pcStr; pcStr++ ){
         if ( ( szTab == *pcStr ) || ( szSpace == *pcStr ) ){
-            bIsBlank = TRUE;
+            bIsBlank = true;
         } else {
             if ( bIsBlank ){
-                bIsBlank = FALSE;
+                bIsBlank = false;
                 if ( 0 < ucArgsIdx ){
                     if ( ucArgsIdx - 1 < ARG_NUM ){
                         szBuff[ucBuffCnt] = 0;
@@ -203,9 +203,9 @@ static schar CmdCnvArgs( char * pcStr, PST_CMD pstCmd )
 static bool IsInRange( uint unData, uint unMin, uint unMax )
 {
     if ( ( unMin <= unData ) && ( unData <= unMax ) ){
-        return TRUE;
+        return true;
     } else {
-        return FALSE;
+        return false;
     }
 }
 

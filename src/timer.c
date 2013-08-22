@@ -8,14 +8,14 @@
 #include "common.h"
 
 
-static bool bIsTimerLocking = FALSE;
+static bool bIsTimerLocking = false;
 static ulong ulTimerOvfCnt = 0;
 void (*TimerIsUp)( void );
 
 void SetTimerByMillisecond( ulong ulPreiodByMillisecond, void (*callback)(void) )
 {
-    if ( bIsTimerLocking == FALSE ){
-        bIsTimerLocking = TRUE;
+    if ( bIsTimerLocking == false ){
+        bIsTimerLocking = true;
         TimerIsUp = callback;
         ulTimerOvfCnt = ulPreiodByMillisecond - 1;
         TCNT1 = 0;
@@ -35,7 +35,7 @@ ISR( TIMER2_OVF_vect )
     if ( 0 < ulTimerOvfCnt ){
         ulTimerOvfCnt--;
     } else {
-        bIsTimerLocking = FALSE;
+        bIsTimerLocking = false;
         TCCR1B &= ~( _BV(CS12) | _BV(CS11) | _BV(CS10) );
         TimerIsUp();
     }

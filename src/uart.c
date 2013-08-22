@@ -34,7 +34,7 @@ void UartHandle( void )
     uchar   i;
     
     if ( st_bRxCmdEnd ){
-        st_bRxCmdEnd = FALSE;
+        st_bRxCmdEnd = false;
 
         UCSRB &= ~_BV( RXCIE );       // RX INT Off
         
@@ -55,7 +55,7 @@ void UartHandle( void )
             }
             pgmputs( "\n" );
             ucCmdBuff[i] = 0;
-            bIsCmdExist = TRUE;
+            bIsCmdExist = true;
         }
         
         st_ucRxBuffIdx = 0;
@@ -83,19 +83,19 @@ ISR( USART_RXC_vect )
         if ( st_ucRxBuffIdx < RECV_BUF_SIZE ){
             st_ucRxBuff[st_ucRxBuffIdx++] = ucRxBuff;
             if ( ( chCR == ucRxBuff ) || ( chLF == ucRxBuff )){            // CR
-                st_bRxCmdEnd = TRUE;
+                st_bRxCmdEnd = true;
             } else {
                 myputc( ucRxBuff );
             }
         } else {
-            st_bRxCmdEnd = TRUE;
+            st_bRxCmdEnd = true;
         }
     }
 }
 
 void UartInit( void )
 {
-    st_bRxCmdEnd = FALSE;
+    st_bRxCmdEnd = false;
     st_ucRxBuffIdx = 0;
     st_ucRxCharPrevious = 0;
     memset( st_ucRxBuff,  0, RECV_BUF_SIZE  );
@@ -345,8 +345,8 @@ inline bool myIsDigit( const char* str, int nLen )
 {
     while ( nLen-- ){
         if (!isdigit(*str++)){
-            return FALSE;
+            return false;
         }
     }
-    return TRUE;
+    return true;
 }

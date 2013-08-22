@@ -24,8 +24,8 @@
 #define MAX(a, b)       ( (a > b) ? a : b )
 
 typedef enum {
-    FALSE = 0,
-    TRUE  = 1
+    false = 0,
+    true  = 1
 }BOOLEAN;
 
 
