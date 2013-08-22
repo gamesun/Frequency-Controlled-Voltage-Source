@@ -10,5 +10,8 @@
 #ifndef __TIMER_H__
 #define __TIMER_H__
 
+extern void TimerInit( void );
+extern void SetTimerByMillisecond( ulong ulPreiodByMillisecond, void (*callback)(void) );
+extern bool IsTimerLocking( void );
 
 #endif /* __TIMER_H__ */

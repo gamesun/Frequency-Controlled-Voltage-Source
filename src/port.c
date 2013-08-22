@@ -10,6 +10,7 @@
 #include "dac.h"
 #include "counter.h"
 #include "setting.h"
+#include "timer.h"
 
 #define PORT_EN         PORTA
 #define PORT_EN_BIT     _BV(0)
@@ -31,6 +32,7 @@ static void EnSignalPolling( void );
 static void ClkSignalPolling( void );
 static void EnSignalTrigger( void );
 static void ClkSignalTrigger( void );
+static void Time1IsUp( void );
 
 void PortHandle( void )
 {
@@ -49,10 +51,17 @@ static void EnSignalTrigger( void )
     if ( signal_EN == FALLING_EDGE ){
         signal_EN = NONE_EDGE;
         CounterStart();             // -> STAGE_1
+        SetTimerByMillisecond( 30, Time1IsUp );
     } else if ( signal_EN == RISING_EDGE ){
         signal_EN = NONE_EDGE;
         SetStageAndVolt( STAGE_NONE );
     }
+}
+
+
+static void Time1IsUp( void )
+{
+    SetStageAndVolt( STAGE_2 );
 }
 
 
