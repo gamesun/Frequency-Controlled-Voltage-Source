@@ -59,25 +59,32 @@ void SetStageAndVolt( uchar ucStage )
     switch ( ucCntStage ){ 
     case STAGE_1:
         SetVoltageByValue( GetVTable( 1 ) );
+        pgmputs( "1 " );
         break;
     case STAGE_2:
         SetVoltageByValue( GetVTable( 2 ) );
+        pgmputs( "2 " );
         break;
     case STAGE_3:
         SetVoltageByValue( GetVTable( 3 ) );
+        pgmputs( "3 " );
         break;
     case STAGE_4:
         SetVoltageByValue( GetVTable( 4 ) );
+        pgmputs( "4 " );
         break;
     case STAGE_5:
         SetVoltageByValue( GetVTable( 5 ) );
+        pgmputs( "5 " );
         break;
     case STAGE_6:
         SetVoltageByValue( GetVTable( 6 ) );
+        pgmputs( "6 " );
         break;
     case STAGE_NONE:
     default:
         SetVoltageByValue( 0 );
+        pgmputs( "0 " );
         break;
     }
 }

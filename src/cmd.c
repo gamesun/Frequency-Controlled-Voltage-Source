@@ -55,6 +55,7 @@ static void CmdSave( PST_CMD );
 static void CmdVolt( PST_CMD );
 static void CmdVoltCode( PST_CMD );
 static void CmdDacAdjust( PST_CMD );
+static void CmdStart( PST_CMD );
 
 static ST_CMD_MATRIX stCmdMatrix[] = {
     
@@ -67,6 +68,7 @@ static ST_CMD_MATRIX stCmdMatrix[] = {
     { "volt",       CmdVolt         },
     { "voltcode",   CmdVoltCode     },
     { "dacajt",     CmdDacAdjust    },
+    { "start",      CmdStart        },
     
     { "",           NULL            }  // Placing NULL at the end.
 };
@@ -409,6 +411,13 @@ static void CmdDacAdjust( PST_CMD pstCmd )
         pgmputs( " -> the real voltage measuring after \"voltcode " );p2;pgmputs( "\" using a voltmeter.\n" );
         pgmputs( "  (Unit: mV)\n" );
     }
+}
+
+
+static void CmdStart( PST_CMD pstCmd )
+{
+    CounterStart();
+    SetStageAndVolt( STAGE_1 );
 }
 
 
