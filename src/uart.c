@@ -9,8 +9,8 @@
 #include "uart.h"
 
 
-const char chCR  PROGMEM = 13;     // CR (Carriage Return)
-const char chLF  PROGMEM = 10;     // LF£¨Line Feed)
+const char chCR  PROGMEM = 13;     // CR (Carriage Return)  \r
+const char chLF  PROGMEM = 10;     // LF£¨Line Feed)        \n
 const char chBS  PROGMEM = 8;      // BackSpace
 const char chSP  PROGMEM = 32;     // Space
 
