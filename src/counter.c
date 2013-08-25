@@ -120,8 +120,8 @@ static void SetTc0Top( uint unCntTop )
 }
 
 
-/*---------------------------------------------------- T/C0 Overflow Event --*/
-ISR( TIMER0_OVF_vect )
+/*----------------------------------------------- T/C0 Compare Match Event --*/
+ISR( TIMER0_COMP_vect )
 {
     if ( 1 < ucOvfCntRemain ){
         ucOvfCntRemain--;
