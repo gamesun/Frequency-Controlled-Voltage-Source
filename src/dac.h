@@ -11,7 +11,7 @@
 #define __DAC_H__
 
 #define DAC_V_MIN           0       // 0.00V
-#define DAC_V_REF           2500ul  // 2.500V
+#define DAC_V_REF           1000ul  // 1.000V
 #define DAC_V_MAX           (DAC_V_REF * DAC_CODE_MAX / 512ul)    // Full Scale Range
 
 

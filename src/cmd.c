@@ -307,7 +307,7 @@ static void CmdSetVol( PST_CMD pstCmd )
         pgmputs( "bad arguments.\n\n" );
         pgmputs( "usage: setvol i v\n" );
         pgmputs( "  i -> Index of one voltage, from 1 to 6.\n" );
-        pgmputs( "  v -> the Voltage, from 0 to 4995 (mV).\n" );
+        pgmputs( "  v -> the Voltage, from 0 to " );putun( (uint)DAC_V_MAX );pgmputs( " (mV).\n" );
     }
 }
 
@@ -362,7 +362,7 @@ static void CmdVolt( PST_CMD pstCmd )
     } else {
         pgmputs( "bad arguments.\n\n" );
         pgmputs( "usage: volt v\n" );
-        pgmputs( "  v -> from 0 to 4995 (mV).\n" );
+        pgmputs( "  v -> from 0 to " );putun( (uint)DAC_V_MAX );pgmputs( " (mV).\n" );
     }
 }
 
