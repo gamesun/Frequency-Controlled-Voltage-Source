@@ -13,10 +13,10 @@
 #include "timer.h"
 #include "parameter.h"
 
-#define PORT_EN         PORTA
+#define PORT_EN         PINA
 #define PORT_EN_BIT     _BV(0)
 
-#define PORT_CLK        PORTB
+#define PORT_CLK        PINB
 #define PORT_CLK_BIT    _BV(0)
 
 typedef enum {
