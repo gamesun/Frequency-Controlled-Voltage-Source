@@ -56,6 +56,8 @@ static void CmdVolt( PST_CMD );
 static void CmdVoltCode( PST_CMD );
 static void CmdDacAdjust( PST_CMD );
 
+static void CmdDebug( PST_CMD );
+
 static ST_CMD_MATRIX stCmdMatrix[] = {
     
     { "help",       CmdHelp         },
@@ -68,8 +70,36 @@ static ST_CMD_MATRIX stCmdMatrix[] = {
     { "voltcode",   CmdVoltCode     },
     { "dacajt",     CmdDacAdjust    },
     
+    { "dbg",        CmdDebug        },
+    
     { "",           NULL            }  // Placing NULL at the end.
 };
+
+
+static void CmdDebug( PST_CMD pstCmd )
+{
+    if ( 1 == pstCmd->ucArgsCnt ){
+        switch ( pstCmd->unArgs[0] ){
+        case 0:
+            bIsDebug = false;
+            pgmputs( "off\n" );
+            break;
+        case 1:
+            bIsDebug = true;
+            pgmputs( "on\n" );
+            break;
+        default:
+            break;
+        }
+    }else if ( 0 == pstCmd->ucArgsCnt ){
+        if ( bIsDebug ){
+            pgmputs( "on\n" );
+        } else {
+            pgmputs( "off\n" );
+        }
+    }
+}
+
 
 const char szSpace  PROGMEM = 32;
 const char szTab    PROGMEM = 9;

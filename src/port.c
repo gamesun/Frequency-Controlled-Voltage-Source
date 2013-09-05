@@ -52,7 +52,8 @@ static void EnSignalTrigger( void )
     if ( signal_EN == FALLING_EDGE ){
         signal_EN = NONE_EDGE;
         CounterStart();
-        SetStageAndVolt( STAGE_1 );
+        SetStage( STAGE_1 );
+//        SetStageAndVolt( STAGE_1 );
         SetTimerByMillisecond( GetTTable( 1 ), Time1IsUp );
     } else if ( signal_EN == RISING_EDGE ){
         signal_EN = NONE_EDGE;

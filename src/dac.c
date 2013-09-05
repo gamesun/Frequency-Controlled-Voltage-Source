@@ -21,7 +21,7 @@ static void SetDacCode( uint unDacCode );
 
 void DacInit( void )
 {
-    SetVoltageByValue( 0 );
+//    SetVoltageByValue( 0 );
 }
 
 
@@ -64,7 +64,7 @@ static void SetDacCode( uint unDacCode )
     uchar ucBuff[2];
     
     if ( SpiIsBusy() ){
-        
+        pgmputs( "Spi Busy\n" );
     } else {
         unDacCode <<= 2;
         ucBuff[0] = unDacCode >> 8;

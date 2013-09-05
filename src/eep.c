@@ -17,6 +17,8 @@ static void EepWt( uint unAddress, uchar ucData );
 
 void EepReadAll( void )
 {
+    uchar ucTmp;
+    
     SetVTable( 1, EepRdWord( EEP_ADDR_VOL1 ) );
     SetVTable( 2, EepRdWord( EEP_ADDR_VOL2 ) );
     SetVTable( 3, EepRdWord( EEP_ADDR_VOL3 ) );
@@ -30,6 +32,13 @@ void EepReadAll( void )
     SetCTable( 5, EepRdWord( EEP_ADDR_C5 ) );
     
     SetTTable( 1, EepRdWord( EEP_ADDR_T1 ) );
+    
+    ucTmp = EepRdByte( EEP_ADDR_DBG1 );
+    if ( 0 == ucTmp ){
+        bIsDebug = false;
+    } else {
+        bIsDebug = true;
+    }
 }
 
 
@@ -48,6 +57,12 @@ void EepWriteAll( void )
     EepWtWord( EEP_ADDR_C5, GetCTable(5) );
     
     EepWtWord( EEP_ADDR_T1, GetTTable(1) );
+    
+    if ( bIsDebug ){
+        EepWtByte( EEP_ADDR_DBG1, 1 );
+    } else {
+        EepWtByte( EEP_ADDR_DBG1, 0 );
+    }
 }
 
 

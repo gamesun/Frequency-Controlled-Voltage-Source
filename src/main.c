@@ -15,6 +15,9 @@
 #include "eep.h"
 #include "dac.h"
 #include "timer.h"
+#include "setting.h"
+
+bool bIsDebug = false;
 
 static void InitDevices( void );
 static void SayWelcome( void );
@@ -25,11 +28,15 @@ int main( void )
     InitDevices();
     
     SayWelcome();
-
+    
     while ( 1 ){
         UartHandle();
         CmdHandle();
         PortHandle();
+        
+        if ( STAGE_1 == GetStage() ){
+            SetStageAndVolt( STAGE_1 );
+        }
     }
     
     return 0;

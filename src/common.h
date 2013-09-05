@@ -59,4 +59,7 @@ typedef union {
     ulong   dword;
 } DW2B;
 
+
+extern bool bIsDebug;
+
 #endif /* __COMMON_H__ */

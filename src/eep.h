@@ -45,6 +45,11 @@
 #define EEP_T1_LEN              2
 
 
+#define EEP_ADDR_DBG1           (EEP_ADDR_BASE + 0x0100U)
+#define EEP_DBG1_LEN            1
+#define EEP_ADDR_DBG2           (EEP_ADDR_DBG1 + EEP_DBG1_LEN)
+#define EEP_DBG2_LEN            1
+
 extern void EepWtByte( uint unStartAddress, uchar ucData );
 extern uchar EepRdByte( uint unStartAddress );
 extern void EepWtWord( uint unStartAddress, uint unData );

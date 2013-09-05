@@ -46,6 +46,11 @@ static void Tc0Init( void )
 }
 
 
+void SetStage( uchar ucStage )
+{
+    ucCntStage = ucStage;
+}
+
 uchar GetStage( void )
 {
     return ucCntStage;
@@ -77,7 +82,7 @@ void SetStageAndVolt( uchar ucStage )
         break;
     case STAGE_NONE:
     default:
-        SetVoltageByValue( 0 );
+//        SetVoltageByValue( 0 );
         break;
     }
 }

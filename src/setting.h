@@ -20,6 +20,7 @@
 
 #define STAGE_NUM           6
 
+void SetStage( uchar ucStage );
 extern uchar GetStage( void );
 extern void SetStageAndVolt( uchar ucStage );
 
