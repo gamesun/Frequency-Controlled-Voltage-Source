@@ -29,8 +29,8 @@ bool IsTimerLocking( void )
     return bIsTimerLocking;
 }
 
-/*---------------------------------------------------- T/C2 Overflow Event --*/
-ISR( TIMER2_OVF_vect )
+/*---------------------------------------------------- T/C1 Overflow Event --*/
+ISR( TIMER1_OVF_vect )
 {
     if ( 0 < ulTimerOvfCnt ){
         ulTimerOvfCnt--;
