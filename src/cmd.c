@@ -221,10 +221,11 @@ static void CmdHelp( PST_CMD pstCmd )
     pgmputs( "  setcnt     set counters' values of each stage.\n" );
     pgmputs( "  setvol     set voltages of each stage.(Unit:mV)\n" );
     pgmputs( "  settime    set times of each stage.(Unit:ms)\n" );
-    pgmputs( "  save       save the values which are set by 'setcnt', 'setvol'.\n" );
+    pgmputs( "  save       save the values(set by 'setcnt', 'setvol', 'settime') to EEPROM.\n" );
     pgmputs( "  volt       set the DAC output voltage directly by voltage value.\n" );
     pgmputs( "  voltcode   set the DAC output voltage directly by DAC Code.\n" );
-    pgmputs( "  dacajt     Adjust the DAC's Coefficient-K & Coefficient-B.\n" );
+    pgmputs( "  dacajt     Adjust the DAC's Coefficient-K & Coefficient-B.(Unfinished)\n" );
+    pgmputs( "  clrstg     clear the stage to start a new voyage.\n" );
     pgmputs( "\n" );
     pgmputs( "Type a command will display it's usage.\n" );
 }
@@ -420,6 +421,7 @@ static void CmdClearStage( PST_CMD pstCmd )
 {
     CounterClear();
     TimerClear();
+    SetStageAndVolt( STAGE_NONE );
 }
 
 static void dbgPutCmd( PST_CMD pstCmd )
