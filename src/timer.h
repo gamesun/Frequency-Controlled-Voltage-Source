@@ -13,5 +13,6 @@
 extern void TimerInit( void );
 extern void SetTimerByMillisecond( ulong ulPreiodByMillisecond, void (*callback)(void) );
 extern bool IsTimerLocking( void );
+extern void TimerClear( void );
 
 #endif /* __TIMER_H__ */

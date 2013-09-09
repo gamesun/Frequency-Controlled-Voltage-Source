@@ -90,6 +90,12 @@ void CounterStart( void )
 }
 
 
+void CounterClear( void )
+{
+    Tc0Stop();
+}
+
+
 static void Tc0Start( void )
 {
     TCNT0   = 0x00;

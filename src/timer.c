@@ -42,6 +42,13 @@ ISR( TIMER2_OVF_vect )
 }
 
 
+void TimerClear( void )
+{
+    TCCR1B &= ~( _BV(CS12) | _BV(CS11) | _BV(CS10) );
+    bIsTimerLocking = false;
+}
+
+
 void TimerInit( void )
 {
     TCCR1B  =   0x00;                       // timer stop.

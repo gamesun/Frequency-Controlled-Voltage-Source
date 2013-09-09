@@ -12,6 +12,6 @@
 
 extern void CounterInit( void );
 extern void CounterStart( void );
-
+extern void CounterClear( void );
 
 #endif /* __COUNTER_H__ */

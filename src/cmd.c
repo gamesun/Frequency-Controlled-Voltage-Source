@@ -13,6 +13,7 @@
 #include "setting.h"
 #include "eep.h"
 #include "parameter.h"
+#include "timer.h"
 
 #define CMD_LEN         10
 #define ARG_NUM         4
@@ -55,6 +56,7 @@ static void CmdSave( PST_CMD );
 static void CmdVolt( PST_CMD );
 static void CmdVoltCode( PST_CMD );
 static void CmdDacAdjust( PST_CMD );
+static void CmdClearStage( PST_CMD );
 
 static ST_CMD_MATRIX stCmdMatrix[] = {
     
@@ -67,6 +69,8 @@ static ST_CMD_MATRIX stCmdMatrix[] = {
     { "volt",       CmdVolt         },
     { "voltcode",   CmdVoltCode     },
     { "dacajt",     CmdDacAdjust    },
+    
+    { "clrstg",     CmdClearStage   },
     
     { "",           NULL            }  // Placing NULL at the end.
 };
@@ -411,6 +415,12 @@ static void CmdDacAdjust( PST_CMD pstCmd )
     }
 }
 
+
+static void CmdClearStage( PST_CMD pstCmd )
+{
+    CounterClear();
+    TimerClear();
+}
 
 static void dbgPutCmd( PST_CMD pstCmd )
 {
